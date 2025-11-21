@@ -60,37 +60,24 @@ int main
     "{\"a\":\"It was the best of times, it was the worst of times.\"}",
     NULL
   };
-  unsigned i = 0;
-  unsigned enclen;
-  char* reparsed;
-  char* comparestr;
+  unsigned i=0;
 
   while (1) {
     ytf_t ytf = { 0 };
     char* jsonstring = tests[ i++ ];
-    json_t* json, * compare;
+    vec_t json = { jsonstring, strlen(jsonstring) };
+    vec_t json_compare = { 0 };
 
     if (jsonstring == NULL) {
       break;
     }
-    json = json_parse(jsonstring);
+    if (ytf_parse_json(&json, &ytf)) {
+      fprintf(stderr, "Failed at %s\n", jsonstring);
+      return ~0;
+    }
 
-    ytf_encode_json(&ytf, json);
-    enclen = ytf.buf.size;
-    ytf.byteoffset = 0;
-    ytf.bitoffset = 0;
-    compare = json_new(JSON_TYPE_NULL);
-    ytf_decode_json(&ytf, compare);
-    reparsed = json_string(json);
-    comparestr = json_string(compare);
-    fprintf(stderr,
-      "test_encode_json LENGTHS %u -> %u, COMPARE %s %s: "
-      , (unsigned)strlen(jsonstring)
-      , enclen
-      , reparsed
-      , comparestr
-    );
-    if (0 == strcmp(reparsed, comparestr)) {
+    ytf_encode_json(&ytf, &json_compare);
+    if (0 == vec_compare(&json, &json_compare)) {
       fprintf(stderr, "Test succeeded.\n");
     } else {
       fprintf(stderr, "Test failed.\n");

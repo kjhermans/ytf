@@ -62,7 +62,7 @@ int main
     -9223372036854775807,
   };
   for (unsigned i=0; i < 17; i++) {
-    ytf_t ytf = { 0 };
+    ytf_parse_t ytf = { 0 };
     ytf_encode_int(&ytf, tests[ i ]);
     //flogmem(stderr, ytf.buf.data, ytf.buf.size);
     ytf.byteoffset = 0;

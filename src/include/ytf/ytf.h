@@ -35,6 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _YTF_YTF_H_
 
 #include <stdio.h>
+#include <inttypes.h>
 
 #include <gpeg/lib/gpeg/gpeg_types.h>
 #include <gpeg/lib/engine/gpege.h>
@@ -42,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <util/map.h>
 #include <util/array.h>
 #include <util/vec_t.h>
-#include <util/devmacroes.h>
+#include <util/util_functions.h>
 
 #include "ytf_defines.h"
 #include "ytf_types.h"

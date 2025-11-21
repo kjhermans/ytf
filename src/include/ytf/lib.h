@@ -1,7 +1,7 @@
 /**
- * This file is part of Naigama, a parser engine.
+ * This file is part of the YTF project.
 
-Copyright (c) 2020, Kees-Jan Hermans <kees.jan.hermans@gmail.com>
+Copyright (c) 2024, Kees-Jan Hermans <kees.jan.hermans@gmail.com>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -11,7 +11,7 @@ modification, are permitted provided that the following conditions are met:
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither the name of the <organization> nor the
+    * Neither the name of the organization nor the
       names of its contributors may be used to endorse or promote products
       derived from this software without specific prior written permission.
 
@@ -31,41 +31,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \brief
  */
 
-#include <stdio.h>
-#include <ctype.h>
+#ifndef _YTF_LIB_H_
+#define _YTF_LIB_H_
 
-/**
- * Writes the contents of a piece of memory to a file, hexdump-style.
- */
-void flogmem
-  (FILE* file, void* _mem, unsigned int size)
-{
-  char* mem = _mem;
-  char print[16];
-  unsigned int c = 0;
-  *print = 0;
-  if (file == 0) {
-    file = stderr;
-  }
-  fprintf(file, "Debugging memory at %p size %u\n", _mem, size);
-  if (size == 0) {
-    return;
-  }
-  fprintf(file, "%.8x  ", c);
-  while (size--) {
-    unsigned char byte = *mem++;
-    fprintf(file, "%.2x ", byte);
-    print[c % 16] = (isprint(byte) ? byte : '.');
-    if ((++c % 16) == 0) {
-      fprintf(file, "     %-.*s\n%.8x  ", 16, print, c);
-      *print = 0;
-    }
-  }
-  while (c % 16) {
-    print[c % 16] = ' ';
-    c++;
-    fprintf(file, "   ");
-  }
-  fprintf(file, "     %-.*s\n", 16, print);
-  fflush(file);
-}
+#include <ytf/ytf.h>
+#include <util/devmacroes.h>
+
+#endif

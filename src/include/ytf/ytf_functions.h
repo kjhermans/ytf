@@ -17,10 +17,347 @@ int flat_grammar_process_node
   )
   __attribute__ ((warn_unused_result));
 
-/* declared in ./flogmem.c */
+/* declared in ./flat_handler_impl.c */
 extern
-void flogmem
-  (FILE* file, void* _mem, unsigned int size);
+int flat_handle_BLOB
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_STRING
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_INT
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_FLOAT
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_SEPARATOR
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_COLON
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_SPACE
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_NULL
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_COMMENT
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_NVPAIR
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_YTF
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_BOOL
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_OBJECTS
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_NAME
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_NEWLINE
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_VALUE
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_MULTILINECOMMENT
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_OBJECT
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_END
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_BLOB
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_STRING
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_INT
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_FLOAT
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_SEPARATOR
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_COLON
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_SPACE
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_NULL
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_COMMENT
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_NVPAIR
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_YTF
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_BOOL
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_OBJECTS
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_NAME
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_NEWLINE
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_VALUE
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_MULTILINECOMMENT
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_OBJECT
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_END
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_post_BLOB
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_post_STRING
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_post_INT
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_post_FLOAT
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_post_SEPARATOR
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_post_COLON
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_post_SPACE
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_post_NULL
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_post_COMMENT
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_post_NVPAIR
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_post_YTF
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_post_BOOL
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_post_OBJECTS
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_post_NAME
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_post_NEWLINE
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_post_VALUE
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_post_MULTILINECOMMENT
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_post_OBJECT
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./flat_handler_impl.c */
+extern
+int flat_handle_post_post_END
+  (gpeg_capture_t* p, unsigned i, gpeg_capture_t* c, void* a)
+  __attribute__ ((warn_unused_result));
 
 /* declared in ./json_handler.c */
 extern
@@ -29,6 +366,12 @@ int json_grammar_process_node
     gpeg_capture_t* capture,
     void* ptr
   )
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./json_parse.c */
+extern
+ytf_t* json_parse
+  (gpeg_capture_t* c)
   __attribute__ ((warn_unused_result));
 
 /* declared in ./ytf_encode.c */
@@ -115,9 +458,13 @@ void ytf_decode_int
 
 /* declared in ./ytf_encode_json.c */
 extern
-int ytf_encode_json
-  (ytf_t* ytf, vec_t* json)
-  __attribute__ ((warn_unused_result));
+void ytf_encode_json_string
+  (unsigned char* str, unsigned size, vec_t* json);
+
+/* declared in ./ytf_encode_json.c */
+extern
+void ytf_encode_json
+  (ytf_t* ytf, vec_t* json);
 
 /* declared in ./ytf_encode_lv.c */
 extern
@@ -128,6 +475,18 @@ void ytf_encode_lv
 extern
 void ytf_decode_lv
   (ytf_parse_t* ytf, void* buf, unsigned size);
+
+/* declared in ./ytf_parse_bin.c */
+extern
+int ytf_parse_bin
+  (const vec_t* string, ytf_t* ytf)
+  __attribute__ ((warn_unused_result));
+
+/* declared in ./ytf_parse_flat.c */
+extern
+int ytf_parse_flat
+  (const vec_t* string, ytf_t* ytf)
+  __attribute__ ((warn_unused_result));
 
 /* declared in ./ytf_parse_json.c */
 extern

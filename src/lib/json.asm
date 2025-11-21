@@ -111,7 +111,7 @@ __L18:
 HASHELT:
   call __prefix
   opencapture 2
-  call STRING
+  call NAME
   call COLON
   call VALUE
   closecapture 2
@@ -206,6 +206,11 @@ __L37:
   char 22
   char 22
   char 22
+  ret
+
+NAME:
+  call __prefix
+  call STRING
   ret
 
 STRING:

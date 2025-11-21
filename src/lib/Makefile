@@ -35,7 +35,7 @@ json.byc: json.asm
 	gpega -i json.asm -o json.byc
 
 json.asm: json.gpeg
-	gpegc -C \
+	gpegc \
 	  -i json.gpeg \
 	  -o json.asm \
 	  -M json_slotmap.h \
@@ -47,7 +47,7 @@ huffmandict: ../include/ytf/ytf_dictionary.h
 	../../bin/huffmandict.pl ../res/*.txt > ../include/ytf/ytf_dictionary.h
 
 ../include/ytf/ytf_functions.h: $(CFILES)
-	../../bin/genfnchdr -i YTF_FUNCTIONS \
+	../../bin/genfnchdr -i YTF_FUNCTIONS -t ytf_t \
 	  > ../include/ytf/ytf_functions.h
 
 $(TARGET): $(OBJECTS)

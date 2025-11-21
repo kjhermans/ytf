@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \brief
  */
 
-#include <ytf/ytf.h>
+#include <ytf/lib.h>
 
 static
 #include "json_bytecode.h"
@@ -53,11 +53,12 @@ int ytf_parse_json
   ASSERT(string)
   ASSERT(obj)
 
+  ytf_t* localtop;
   gpege_ec_t result = { 0 };
   gpeg_capturelist_t resobj = { 0 };
   GPEG_ERR_T e;
 
-  result.input = string;
+  result.input = (vec_t*)string;
   result.errorstr = &err;
   if (parser_init == 0) {
     gpege_init(&parser);
@@ -79,7 +80,12 @@ int ytf_parse_json
   }
   gpege_ec_free(&result);
 
-  int i = json_grammar_process_node(&(resobj.list[ 0 ]), NULL); (void)i;
+  if ((localtop = json_parse(&(resobj.list[ 0 ]))) == NULL) {
+    gpeg_capturelist_free(&resobj);
+    return ~0;
+  }
+  *ytf = *localtop;
+  free(localtop);
   gpeg_capturelist_free(&resobj);
 
   return 0;

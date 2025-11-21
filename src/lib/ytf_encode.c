@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \brief
  */
 
-#include <ytf/ytf.h>
+#include <ytf/lib.h>
 
 //#define YTF_HIGHENDIAN
 

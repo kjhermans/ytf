@@ -55,7 +55,7 @@ int main
   unsigned enclen;
 
   while (1) {
-    ytf_t ytf = { 0 };
+    ytf_parse_t ytf = { 0 };
     vec_t compare = { 0 };
     char* test = tests[ i++ ];
 
