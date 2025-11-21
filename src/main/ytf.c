@@ -51,10 +51,10 @@ int main
     if (ytf_parse_json(&input, &ytf)) {
     }
   } else if (queryargs(argc, argv, 'b', "binary", 0, 0, 0, 0) == 0) {
-    if (ytf_parse_bin(&input, &ytf)) {
-    }
+    ytf_parse_bin(&input, &ytf);
   } else if (queryargs(argc, argv, 'f', "flat", 0, 0, 0, 0) == 0) {
     if (ytf_parse_flat(&input, &ytf)) {
     }
   }
+  return 0;
 }

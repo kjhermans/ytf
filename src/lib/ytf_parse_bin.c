@@ -33,10 +33,66 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <ytf/lib.h>
 
+static
+ytf_t* ytf_parse_tuple
+  (ytf_parse_t* p)
+{
+  unsigned type;
+  unsigned tmp;
+  ytf_t* ytf = calloc(1, sizeof(ytf_t));
+
+  ytf_decode_type(p, &type);
+  ytf->type = type;
+  switch (type) {
+  case 0:
+  case YTF_TYPE_NULL:
+    break;
+  case YTF_TYPE_BOOLEAN:
+    ytf_decode_bit(p, &tmp);
+    ytf->value.boolint = tmp;
+    break;
+  case YTF_TYPE_INTEGER:
+    ytf_decode_int(p, &(ytf->value.boolint));
+    break;
+  case YTF_TYPE_FLOAT:
+    ytf_decode_float(p, &(ytf->value.fraction));
+    break;
+  case YTF_TYPE_STRING:
+    ytf_decode_buffer(p, &(ytf->value.string.data), &(ytf->value.string.size));
+    break;
+  case YTF_TYPE_ARRAY:
+    ytf_decode_bit(p, &tmp);
+    while (tmp) {
+      ytf_t* elt = ytf_parse_tuple(p);
+      ytf_array_push(&(ytf->value.array), elt);
+      ytf_decode_bit(p, &tmp);
+    }
+    break;
+  case YTF_TYPE_HASHTABLE:
+    ytf_decode_bit(p, &tmp);
+    while (tmp) {
+      vec_t key = { 0 };
+      ytf_decode_buffer(p, &(key.data), &(key.size));
+      ytf_t* value = ytf_parse_tuple(p);
+      ytf_hash_put(&(ytf->value.hash), (char*)(key.data), value);
+      ytf_decode_bit(p, &tmp);
+    }
+    break;
+  }
+  return ytf;
+}
+
 /**
  *
  */
-int ytf_parse_bin
+void ytf_parse_bin
   (const vec_t* string, ytf_t* ytf)
 {
+  ytf_parse_t p = { .buf = *string };
+
+  ytf->type = YTF_TYPE_ARRAY;
+  while (!(p.eof)) {
+    ytf_t* elt = ytf_parse_tuple(&p);
+    ytf_array_push(&(ytf->value.array), elt);
+  }
 }

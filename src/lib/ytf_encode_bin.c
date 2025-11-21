@@ -78,12 +78,11 @@ void ytf_encode_tuple
 /**
  *
  */
-int ytf_encode_bin
+void ytf_encode_bin
   (ytf_t* ytf, vec_t* bin)
 {
   ytf_parse_t p = { 0 };
 
   ytf_encode_tuple(&p, ytf);
   *bin = p.buf;
-  return 0;
 }

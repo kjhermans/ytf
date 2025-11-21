@@ -51,6 +51,29 @@ void json_parse_hashelt
   }
 }
 
+static
+void json_parse_string
+  (gpeg_capture_t* parent, ytf_t* elt)
+{
+  for (unsigned i=0; i < parent->children.count; i++) {
+    gpeg_capture_t* child = &(parent->children.list[ i ]);
+    if (child->type == SLOT_UTF8CHAR) {
+      vec_append(&(elt->value.string), child->data.data, child->data.size);
+    } else if (child->type == SLOT_STRING_0) {
+      switch (child->data.data[ 0 ]) {
+      case 'n': vec_appendchr(&(elt->value.string), 0x0a); break;
+      case 'r': vec_appendchr(&(elt->value.string), 0x0d); break;
+      case 't': vec_appendchr(&(elt->value.string), 0x09); break;
+      case 'b': vec_appendchr(&(elt->value.string), 0x08); break;
+      case 'f': vec_appendchr(&(elt->value.string), 0x0c); break;
+      case '"': vec_appendchr(&(elt->value.string), 0x22); break;
+      case '\\': vec_appendchr(&(elt->value.string), 0x5c); break;
+      case 'u': /* TODO: Unicode escape */ break;
+      }
+    }
+  }
+}
+
 /**
  *
  */
@@ -83,9 +106,7 @@ ytf_t* json_parse
     {
       ytf_t* ytf = calloc(1, sizeof(ytf_t));
       ytf->type = YTF_TYPE_STRING;
-      ytf->value.string.size = strlen((char*)(c->data.data));
-      ytf->value.string.data = calloc(1, ytf->value.string.size + 1);
-      memcpy(ytf->value.string.data, c->data.data, ytf->value.string.size);
+      json_parse_string(c, ytf);
       return ytf;
     }
     break;
@@ -93,9 +114,7 @@ ytf_t* json_parse
     {
       ytf_t* ytf = calloc(1, sizeof(ytf_t));
       ytf->type = YTF_TYPE_STRING;
-      ytf->value.string.size = strlen((char*)(c->data.data));
-      ytf->value.string.data = calloc(1, ytf->value.string.size + 1);
-      memcpy(ytf->value.string.data, c->data.data, ytf->value.string.size);
+      json_parse_string(c, ytf);
       return ytf;
     }
     break;

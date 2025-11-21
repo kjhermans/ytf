@@ -416,9 +416,8 @@ void ytf_decode_byte
 
 /* declared in ./ytf_encode_bin.c */
 extern
-int ytf_encode_bin
-  (ytf_t* ytf, vec_t* bin)
-  __attribute__ ((warn_unused_result));
+void ytf_encode_bin
+  (ytf_t* ytf, vec_t* bin);
 
 /* declared in ./ytf_encode_buffer.c */
 extern
@@ -478,9 +477,8 @@ void ytf_decode_lv
 
 /* declared in ./ytf_parse_bin.c */
 extern
-int ytf_parse_bin
-  (const vec_t* string, ytf_t* ytf)
-  __attribute__ ((warn_unused_result));
+void ytf_parse_bin
+  (const vec_t* string, ytf_t* ytf);
 
 /* declared in ./ytf_parse_flat.c */
 extern
