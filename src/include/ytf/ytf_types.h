@@ -34,13 +34,30 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _YTF_YTF_FUNCTIONS_H_
 #define _YTF_YTF_FUNCTIONS_H_
 
+typedef struct ytf ytf_t;
+
 typedef struct
 {
-  vec_t buf;
-  unsigned bitoffset;
-  unsigned byteoffset;
-  int eof;
+  vec_t         buf;
+  unsigned      bitoffset;
+  unsigned      byteoffset;
+  int           eof;
 }
-ytf_t;
+ytf_parse_t;
+
+MAKE_ARRAY_HEADER(ytf_t*, ytf_array_)
+MAKE_MAP_HEADER(char*, ytf_t*, ytf_hash_)
+
+struct ytf
+{
+  int           type;
+  union {
+    int64_t       boolint;
+    double        fraction;
+    vec_t         string;
+    ytf_array_t   array;
+    ytf_hash_t    hash;
+  }             value;
+};
 
 #endif

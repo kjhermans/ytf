@@ -34,10 +34,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _YTF_YTF_H_
 #define _YTF_YTF_H_
 
-#include <map.h>
-#include <array.h>
-#include <vec_t.h>
-#include <json.h>
+#include <stdio.h>
+
+#include <gpeg/lib/gpeg/gpeg_types.h>
+#include <gpeg/lib/engine/gpege.h>
+
+#include <util/map.h>
+#include <util/array.h>
+#include <util/vec_t.h>
+#include <util/devmacroes.h>
 
 #include "ytf_defines.h"
 #include "ytf_types.h"

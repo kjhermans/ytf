@@ -77,7 +77,7 @@ int ytf_dict_get_reverse
 
 static
 void ytf_encode_buffer_compressed
-  (ytf_t* ytf, vec_t* vec)
+  (ytf_parse_t* ytf, vec_t* vec)
 {
   ytf_encode_bit(ytf, 1); // continue
   ytf_encode_bit(ytf, 1); // compressed
@@ -92,7 +92,7 @@ void ytf_encode_buffer_compressed
 
 static
 void ytf_encode_buffer_uncompressed
-  (ytf_t* ytf, vec_t* vec)
+  (ytf_parse_t* ytf, vec_t* vec)
 {
   ytf_encode_bit(ytf, 1); // continue
   ytf_encode_bit(ytf, 0); // uncompressed
@@ -106,7 +106,7 @@ void ytf_encode_buffer_uncompressed
  *
  */
 void ytf_encode_buffer
-  (ytf_t* ytf, unsigned char* buf, unsigned size)
+  (ytf_parse_t* ytf, unsigned char* buf, unsigned size)
 {
   vec_t compr = { 0 };
   vec_t uncompr = { 0 };
@@ -180,7 +180,7 @@ void ytf_encode_buffer
  * and free *buf after return, because this function mallocs it.
  */
 void ytf_decode_buffer
-  (ytf_t* ytf, unsigned char** buf, unsigned* size)
+  (ytf_parse_t* ytf, unsigned char** buf, unsigned* size)
 {
   vec_t result = { 0 };
   unsigned cont, compr, chunksize, B, Clen, Cpayload;

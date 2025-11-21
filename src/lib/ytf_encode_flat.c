@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /**
  *
  */
-int ytf_encode_json
-  (ytf_t* ytf, vec_t* json)
+int ytf_encode_flat
+  (ytf_t* ytf, vec_t* flat)
 {
 }

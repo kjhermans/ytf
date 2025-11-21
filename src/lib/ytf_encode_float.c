@@ -37,13 +37,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
 void ytf_encode_float
-  (ytf_t* ytf, double d)
+  (ytf_parse_t* ytf, double d)
 {
   ytf_encode_lv(ytf, &d, sizeof(d));
 }
 
 void ytf_decode_float
-  (ytf_t* ytf, double* d)
+  (ytf_parse_t* ytf, double* d)
 {
   ytf_decode_lv(ytf, d, sizeof(*d));
 }

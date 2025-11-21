@@ -1,3 +1,3 @@
 all:
-	cd json && make
 	cd lib && make
+#	cd json && make

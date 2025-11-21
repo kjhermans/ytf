@@ -33,15 +33,56 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <ytf/ytf.h>
 
-/**
- * Calls the callback function, potentially several times, until
- * there is no more encoding to be done.
- */
-void json2ytf
-  (json_t* json, vec_t* vec)
-{
-  ytf_t ytf = { 0 };
+static
+#include "json_bytecode.h"
 
-  ytf_encode_json(&ytf, json);
-  *vec = ytf.buf;
+static
+int parser_init = 0;
+
+
+static
+vec_t err = { 0 };
+
+static
+gpege_t parser = { 0 };
+
+int ytf_parse_json
+  (const vec_t* string, ytf_t* ytf)
+{
+  DEBUGFUNCTION
+  ASSERT(string)
+  ASSERT(obj)
+
+  gpege_ec_t result = { 0 };
+  gpeg_capturelist_t resobj = { 0 };
+  GPEG_ERR_T e;
+
+  result.input = string;
+  result.errorstr = &err;
+  if (parser_init == 0) {
+    gpege_init(&parser);
+    parser.bytecode.data = json_byc;
+    parser.bytecode.size = json_byc_len;
+    parser_init = 1;
+  }
+  e = gpege_run(&parser, &result);
+  if (e.code) {
+    vec_printf(&err, "Parser error %s", (char*)(err.data));
+    gpege_ec_free(&result);
+    return ~0;
+  }
+  e = gpege_actions2captures(result.input, &(result.actions), &resobj);
+  if (e.code) {
+    vec_printf(&err, "Parser error %s", (char*)(err.data));
+    gpege_ec_free(&result);
+    return ~0;
+  }
+  gpege_ec_free(&result);
+
+  int i = json_grammar_process_node(&(resobj.list[ 0 ]), NULL); (void)i;
+  gpeg_capturelist_free(&resobj);
+
+  return 0;
 }
+
+

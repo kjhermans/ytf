@@ -39,7 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
 void ytf_encode_bit
-  (ytf_t* ytf, unsigned bit)
+  (ytf_parse_t* ytf, unsigned bit)
 {
   if (ytf->bitoffset == 0) {
     vec_appendchr(&(ytf->buf), 0);
@@ -59,7 +59,7 @@ void ytf_encode_bit
  *
  */
 void ytf_decode_bit
-  (ytf_t* ytf, unsigned* bit)
+  (ytf_parse_t* ytf, unsigned* bit)
 {
   if (ytf->byteoffset == ytf->buf.size) {
     *bit = 0;
@@ -83,7 +83,7 @@ void ytf_decode_bit
  * 
  */
 void ytf_encode_bits
-  (ytf_t* ytf, unsigned bits, unsigned nbits)
+  (ytf_parse_t* ytf, unsigned bits, unsigned nbits)
 {
   for (unsigned i=0; i < nbits; i++) {
     ytf_encode_bit(ytf, ((bits >> i) & 0x01));
@@ -94,7 +94,7 @@ void ytf_encode_bits
  *
  */
 void ytf_decode_bits
-  (ytf_t* ytf, unsigned* bits, unsigned nbits)
+  (ytf_parse_t* ytf, unsigned* bits, unsigned nbits)
 {
   unsigned bit = 0;
 
@@ -111,7 +111,7 @@ void ytf_decode_bits
  * 
  */
 void ytf_encode_type
-  (ytf_t* ytf, unsigned type)
+  (ytf_parse_t* ytf, unsigned type)
 {
   ytf_encode_bits(ytf, type, 3);
 }
@@ -120,7 +120,7 @@ void ytf_encode_type
  *
  */
 void ytf_decode_type
-  (ytf_t* ytf, unsigned* type)
+  (ytf_parse_t* ytf, unsigned* type)
 {
   ytf_decode_bits(ytf, type, 3);
 }
@@ -129,7 +129,7 @@ void ytf_decode_type
  * 
  */
 void ytf_encode_byte
-  (ytf_t* ytf, unsigned char B)
+  (ytf_parse_t* ytf, unsigned char B)
 {
   ytf_encode_bits(ytf, B, 8);
 }
@@ -138,7 +138,7 @@ void ytf_encode_byte
  *
  */
 void ytf_decode_byte
-  (ytf_t* ytf, unsigned char* B)
+  (ytf_parse_t* ytf, unsigned char* B)
 {
   ytf_decode_bits(ytf, (unsigned*)B, 8);
 }

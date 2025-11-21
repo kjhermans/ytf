@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
 void ytf_encode_lv
-  (ytf_t* ytf, void* buf, unsigned size)
+  (ytf_parse_t* ytf, void* buf, unsigned size)
 {
   unsigned char* _buf = buf;
 
@@ -47,7 +47,7 @@ void ytf_encode_lv
 }
 
 void ytf_decode_lv
-  (ytf_t* ytf, void* buf, unsigned size)
+  (ytf_parse_t* ytf, void* buf, unsigned size)
 {
   unsigned char* _buf = buf;
 

@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
 void ytf_encode_int
-  (ytf_t* ytf, int64_t n)
+  (ytf_parse_t* ytf, int64_t n)
 {
   unsigned i=0;
 
@@ -66,7 +66,7 @@ void ytf_encode_int
 }
 
 void ytf_decode_int
-  (ytf_t* ytf, int64_t* n)
+  (ytf_parse_t* ytf, int64_t* n)
 {
   unsigned i=0;
   unsigned sign = 0;
