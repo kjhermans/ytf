@@ -23,8 +23,7 @@ flat.asm: flat.gpeg
 	gpegc -C \
 	  -i flat.gpeg \
 	  -o flat.asm \
-	  -M flat_slotmap.h \
-	  -G flat_handler.c flat
+	  -M flat_slotmap.h
 
 jsonparser: json_bytecode.h
 
@@ -38,8 +37,7 @@ json.asm: json.gpeg
 	gpegc \
 	  -i json.gpeg \
 	  -o json.asm \
-	  -M json_slotmap.h \
-	  -G json_handler.c json
+	  -M json_slotmap.h
 
 huffmandict: ../include/ytf/ytf_dictionary.h
 
