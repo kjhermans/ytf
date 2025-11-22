@@ -31,87 +31,95 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \brief
  */
 
-#include <inttypes.h>
-
 #include <ytf/lib.h>
 
-void ytf_encode_json_string
-  (unsigned char* str, unsigned size, vec_t* json)
+static
+void _ytf_format_flat_string
+  (vec_t* str, vec_t* flat)
 {
-  for (unsigned i=0; i < size; i++) {
-    if (str[ i ] < 32) {
-      switch (str[ i ]) {
-      case '\n':
-        vec_appendstr(json, "\\n"); break;
-      case '\r':
-        vec_appendstr(json, "\\r"); break;
-      case '\t':
-        vec_appendstr(json, "\\t"); break;
-      default:
-        vec_printf(json, "\\x%.2x", str[ i ]);
-      }
-    } else if (str[ i ] == '"') {
-      vec_appendstr(json, "\\\"");
-    } else if (str[ i ] == '\\') {
-      vec_appendstr(json, "\\\\");
-    } else if (str[ i ] > 127) {
-      vec_printf(json, "\\x%.2x", str[ i ]);
-    } else {
-      vec_appendchr(json, str[ i ]);
+  int do_b64 = 0;
+
+  for (unsigned i=0; i < str->size; i++) {
+    if (str->data[ i ] < 32 || str->data[ i ] > 127) {
+      do_b64 = 1;
+      break;
     }
+  }
+  if (do_b64) {
+    vec_base64_encode(str, 0);
+    vec_appendstr(flat, "b64(");
+    vec_append(flat, str->data, str->size);
+    vec_appendstr(flat, ")");
+  } else {
+    vec_appendchr(flat, '"');
+    for (unsigned i=0; i < str->size; i++) {
+      if (str->data[ i ] == '\\' || str->data[ i ] == '"') {
+        vec_appendchr(flat, '\\');
+      }
+      vec_appendchr(flat, str->data[ i ]);
+    }
+    vec_appendchr(flat, '"');
   }
 }
 
-/**
- *
- */
-void ytf_encode_json
-  (ytf_t* ytf, vec_t* json)
+static
+void _ytf_format_flat
+  (ytf_t* ytf, vec_t* key, vec_t* flat)
 {
   switch (ytf->type) {
   case YTF_TYPE_NULL:
-    vec_printf(json, "null");
+    vec_printf(flat, "%s:null\n", (char*)(key->data));
     break;
   case YTF_TYPE_BOOLEAN:
     if (ytf->value.boolint) {
-      vec_printf(json, "true");
+      vec_printf(flat, "%s:true\n", (char*)(key->data));
     } else {
-      vec_printf(json, "false");
+      vec_printf(flat, "%s:false\n", (char*)(key->data));
     }
     break;
   case YTF_TYPE_INTEGER:
-    vec_printf(json, "%"PRId64, ytf->value.boolint);
+    vec_printf(flat, "%s:%"PRId64"\n", (char*)(key->data), ytf->value.boolint);
     break;
   case YTF_TYPE_FLOAT:
-    vec_printf(json, "%f", ytf->value.fraction);
+    vec_printf(flat, "%s:%f", (char*)(key->data), ytf->value.fraction);
+    while (vec_endswith(flat, "0") && !vec_endswith(flat, ".0")) {
+      vec_reduce(flat, 1);
+    }
+    vec_appendchr(flat, '\n');
     break;
   case YTF_TYPE_STRING:
-    vec_appendchr(json, '"');
-    ytf_encode_json_string(ytf->value.string.data, ytf->value.string.size, json);
-    vec_appendchr(json, '"');
+    vec_printf(flat, "%s:", (char*)(key->data));
+    _ytf_format_flat_string(&(ytf->value.string), flat);
+    vec_printf(flat, "\n");
     break;
   case YTF_TYPE_ARRAY:
-    vec_appendchr(json, '[');
     for (unsigned i=0; i < ytf->value.array.count; i++) {
-      ytf_encode_json(ytf->value.array.list[ i ], json);
-      if (i < ytf->value.array.count - 1) {
-        vec_appendchr(json, ',');
-      }
+      vec_t keycopy = { 0 };
+      vec_append(&keycopy, key->data, key->size);
+      if (key->size) { vec_appendchr(&keycopy, '.'); }
+      vec_printf(&keycopy, "%u", i);
+      _ytf_format_flat(ytf->value.array.list[ i ], &keycopy, flat);
+      free(keycopy.data);
     }
-    vec_appendchr(json, ']');
     break;
   case YTF_TYPE_HASHTABLE:
-    vec_appendchr(json, '{');
-    for (unsigned i=0; i < ytf->value.array.count; i++) {
-      vec_appendchr(json, '"');
-      ytf_encode_json_string((unsigned char*)(ytf->value.hash.keys[ i ]), strlen(ytf->value.hash.keys[ i ]), json);
-      vec_appendstr(json, "\":");
-      ytf_encode_json(ytf->value.hash.values[ i ], json);
-      if (i < ytf->value.array.count - 1) {
-        vec_appendchr(json, ',');
-      }
+    for (unsigned i=0; i < ytf->value.hash.count; i++) {
+      vec_t keycopy = { 0 };
+      vec_append(&keycopy, key->data, key->size);
+      if (key->size) { vec_appendchr(&keycopy, '.'); }
+      vec_appendstr(&keycopy, ytf->value.hash.keys[ i ]);
+      _ytf_format_flat(ytf->value.hash.values[ i ], &keycopy, flat);
+      free(keycopy.data);
     }
-    vec_appendchr(json, '}');
     break;
   }
+}
+
+void ytf_format_flat
+  (ytf_t* ytf, vec_t* flat)
+{
+  vec_t key = { 0 };
+
+  vec_appendstr(flat, "#ytf\n");
+  _ytf_format_flat(ytf, &key, flat);
 }

@@ -414,11 +414,6 @@ extern
 void ytf_decode_byte
   (ytf_parse_t* ytf, unsigned char* B);
 
-/* declared in ./ytf_encode_bin.c */
-extern
-void ytf_encode_bin
-  (ytf_t* ytf, vec_t* bin);
-
 /* declared in ./ytf_encode_buffer.c */
 extern
 void ytf_encode_buffer
@@ -428,12 +423,6 @@ void ytf_encode_buffer
 extern
 void ytf_decode_buffer
   (ytf_parse_t* ytf, unsigned char** buf, unsigned* size);
-
-/* declared in ./ytf_encode_flat.c */
-extern
-int ytf_encode_flat
-  (ytf_t* ytf, vec_t* flat)
-  __attribute__ ((warn_unused_result));
 
 /* declared in ./ytf_encode_float.c */
 extern
@@ -455,16 +444,6 @@ extern
 void ytf_decode_int
   (ytf_parse_t* ytf, int64_t* n);
 
-/* declared in ./ytf_encode_json.c */
-extern
-void ytf_encode_json_string
-  (unsigned char* str, unsigned size, vec_t* json);
-
-/* declared in ./ytf_encode_json.c */
-extern
-void ytf_encode_json
-  (ytf_t* ytf, vec_t* json);
-
 /* declared in ./ytf_encode_lv.c */
 extern
 void ytf_encode_lv
@@ -474,6 +453,26 @@ void ytf_encode_lv
 extern
 void ytf_decode_lv
   (ytf_parse_t* ytf, void* buf, unsigned size);
+
+/* declared in ./ytf_format_bin.c */
+extern
+void ytf_format_bin
+  (ytf_t* ytf, vec_t* bin);
+
+/* declared in ./ytf_format_flat.c */
+extern
+void ytf_format_flat
+  (ytf_t* ytf, vec_t* flat);
+
+/* declared in ./ytf_format_json.c */
+extern
+void ytf_format_json_string
+  (unsigned char* str, unsigned size, vec_t* json);
+
+/* declared in ./ytf_format_json.c */
+extern
+void ytf_format_json
+  (ytf_t* ytf, vec_t* json);
 
 /* declared in ./ytf_parse_bin.c */
 extern

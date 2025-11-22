@@ -33,10 +33,56 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <ytf/lib.h>
 
+static
+void ytf_encode_tuple
+  (ytf_parse_t* p, ytf_t* ytf)
+{
+  ytf_encode_type(p, ytf->type);
+  switch (ytf->type) {
+  case YTF_TYPE_NULL:
+    break;
+  case YTF_TYPE_BOOLEAN:
+    if (ytf->value.boolint) {
+      ytf_encode_bit(p, 1);
+    } else {
+      ytf_encode_bit(p, 0);
+    }
+    break;
+  case YTF_TYPE_INTEGER:
+    ytf_encode_int(p, ytf->value.boolint);
+    break;
+  case YTF_TYPE_FLOAT:
+    ytf_encode_int(p, ytf->value.fraction);
+    break;
+  case YTF_TYPE_STRING:
+    ytf_encode_buffer(p, ytf->value.string.data, ytf->value.string.size);
+    break;
+  case YTF_TYPE_ARRAY:
+    for (unsigned i=0; i < ytf->value.array.count; i++) {
+      ytf_encode_bit(p, 1);
+      ytf_encode_tuple(p, ytf->value.array.list[ i ]);
+    }
+    ytf_encode_bit(p, 0);
+    break;
+  case YTF_TYPE_HASHTABLE:
+    for (unsigned i=0; i < ytf->value.array.count; i++) {
+      ytf_encode_bit(p, 1);
+      ytf_encode_buffer(p, (unsigned char*)(ytf->value.hash.keys[ i ]), strlen(ytf->value.hash.keys[ i ]));
+      ytf_encode_tuple(p, ytf->value.hash.values[ i ]);
+    }
+    ytf_encode_bit(p, 0);
+    break;
+  }
+}
+
 /**
  *
  */
-int ytf_encode_flat
-  (ytf_t* ytf, vec_t* flat)
+void ytf_format_bin
+  (ytf_t* ytf, vec_t* bin)
 {
+  ytf_parse_t p = { 0 };
+
+  ytf_encode_tuple(&p, ytf);
+  *bin = p.buf;
 }

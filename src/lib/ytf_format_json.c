@@ -31,58 +31,90 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \brief
  */
 
+#include <inttypes.h>
+
 #include <ytf/lib.h>
 
-static
-void ytf_encode_tuple
-  (ytf_parse_t* p, ytf_t* ytf)
+void ytf_format_json_string
+  (unsigned char* str, unsigned size, vec_t* json)
 {
-  ytf_encode_type(p, ytf->type);
-  switch (ytf->type) {
-  case YTF_TYPE_NULL:
-    break;
-  case YTF_TYPE_BOOLEAN:
-    if (ytf->value.boolint) {
-      ytf_encode_bit(p, 1);
+  for (unsigned i=0; i < size; i++) {
+    if (str[ i ] < 32) {
+      switch (str[ i ]) {
+      case '\n':
+        vec_appendstr(json, "\\n"); break;
+      case '\r':
+        vec_appendstr(json, "\\r"); break;
+      case '\t':
+        vec_appendstr(json, "\\t"); break;
+      default:
+        vec_printf(json, "\\x%.2x", str[ i ]);
+      }
+    } else if (str[ i ] == '"') {
+      vec_appendstr(json, "\\\"");
+    } else if (str[ i ] == '\\') {
+      vec_appendstr(json, "\\\\");
+    } else if (str[ i ] > 127) {
+      vec_printf(json, "\\x%.2x", str[ i ]);
     } else {
-      ytf_encode_bit(p, 0);
+      vec_appendchr(json, str[ i ]);
     }
-    break;
-  case YTF_TYPE_INTEGER:
-    ytf_encode_int(p, ytf->value.boolint);
-    break;
-  case YTF_TYPE_FLOAT:
-    ytf_encode_int(p, ytf->value.fraction);
-    break;
-  case YTF_TYPE_STRING:
-    ytf_encode_buffer(p, ytf->value.string.data, ytf->value.string.size);
-    break;
-  case YTF_TYPE_ARRAY:
-    for (unsigned i=0; i < ytf->value.array.count; i++) {
-      ytf_encode_bit(p, 1);
-      ytf_encode_tuple(p, ytf->value.array.list[ i ]);
-    }
-    ytf_encode_bit(p, 0);
-    break;
-  case YTF_TYPE_HASHTABLE:
-    for (unsigned i=0; i < ytf->value.array.count; i++) {
-      ytf_encode_bit(p, 1);
-      ytf_encode_buffer(p, (unsigned char*)(ytf->value.hash.keys[ i ]), strlen(ytf->value.hash.keys[ i ]));
-      ytf_encode_tuple(p, ytf->value.hash.values[ i ]);
-    }
-    ytf_encode_bit(p, 0);
-    break;
   }
 }
 
 /**
  *
  */
-void ytf_encode_bin
-  (ytf_t* ytf, vec_t* bin)
+void ytf_format_json
+  (ytf_t* ytf, vec_t* json)
 {
-  ytf_parse_t p = { 0 };
-
-  ytf_encode_tuple(&p, ytf);
-  *bin = p.buf;
+  switch (ytf->type) {
+  case YTF_TYPE_NULL:
+    vec_printf(json, "null");
+    break;
+  case YTF_TYPE_BOOLEAN:
+    if (ytf->value.boolint) {
+      vec_printf(json, "true");
+    } else {
+      vec_printf(json, "false");
+    }
+    break;
+  case YTF_TYPE_INTEGER:
+    vec_printf(json, "%"PRId64, ytf->value.boolint);
+    break;
+  case YTF_TYPE_FLOAT:
+    vec_printf(json, "%f", ytf->value.fraction);
+    while (vec_endswith(json, "0") && !vec_endswith(json, ".0")) {
+      vec_reduce(json, 1);
+    }
+    break;
+  case YTF_TYPE_STRING:
+    vec_appendchr(json, '"');
+    ytf_format_json_string(ytf->value.string.data, ytf->value.string.size, json);
+    vec_appendchr(json, '"');
+    break;
+  case YTF_TYPE_ARRAY:
+    vec_appendchr(json, '[');
+    for (unsigned i=0; i < ytf->value.array.count; i++) {
+      ytf_format_json(ytf->value.array.list[ i ], json);
+      if (i < ytf->value.array.count - 1) {
+        vec_appendchr(json, ',');
+      }
+    }
+    vec_appendchr(json, ']');
+    break;
+  case YTF_TYPE_HASHTABLE:
+    vec_appendchr(json, '{');
+    for (unsigned i=0; i < ytf->value.hash.count; i++) {
+      vec_appendchr(json, '"');
+      ytf_format_json_string((unsigned char*)(ytf->value.hash.keys[ i ]), strlen(ytf->value.hash.keys[ i ]), json);
+      vec_appendstr(json, "\":");
+      ytf_format_json(ytf->value.hash.values[ i ], json);
+      if (i < ytf->value.hash.count - 1) {
+        vec_appendchr(json, ',');
+      }
+    }
+    vec_appendchr(json, '}');
+    break;
+  }
 }
