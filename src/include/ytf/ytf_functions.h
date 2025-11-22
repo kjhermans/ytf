@@ -10,9 +10,8 @@
 
 /* declared in ./flat_parse.c */
 extern
-ytf_t* flat_parse
-  (gpeg_capture_t* c)
-  __attribute__ ((warn_unused_result));
+void flat_parse
+  (gpeg_capture_t* c, ytf_array_t* array);
 
 /* declared in ./json_parse.c */
 extern
@@ -107,6 +106,11 @@ void ytf_format_bin
 
 /* declared in ./ytf_format_flat.c */
 extern
+void ytf_format_flat_tagged
+  (ytf_t* ytf, vec_t* flat, char* tag);
+
+/* declared in ./ytf_format_flat.c */
+extern
 void ytf_format_flat
   (ytf_t* ytf, vec_t* flat);
 
@@ -128,7 +132,7 @@ void ytf_parse_bin
 /* declared in ./ytf_parse_flat.c */
 extern
 int ytf_parse_flat
-  (const vec_t* string, ytf_t* ytf)
+  (const vec_t* string, ytf_array_t* array)
   __attribute__ ((warn_unused_result));
 
 /* declared in ./ytf_parse_json.c */

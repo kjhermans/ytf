@@ -35,64 +35,124 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "flat_slotmap.h"
 
 static
+ytf_t* flat_parse_assert_path
+  (ytf_t* top, gpeg_capture_t* c)
+{
+  ytf_t* parent = top;
+
+  for (unsigned i=0; i < c->children.count; i += 2) {
+    char* key = (char*)(c->children.list[ i ].data.data);
+    if (strspn(key, "0123456789") == strlen(key)) {
+      if (parent->type == 0 || parent->type == YTF_TYPE_ARRAY) {
+        unsigned index = strtoull(key, 0, 10);
+        parent->type = YTF_TYPE_ARRAY;
+        if (index >= parent->value.array.count) {
+          for (unsigned i=parent->value.array.count; i <= index; i++) {
+            ytf_t* nll = calloc(1, sizeof(ytf_t));
+            nll->type = (i < index) ? YTF_TYPE_NULL : 0;
+            ytf_array_push(&(parent->value.array), nll);
+          }
+        }
+        parent = parent->value.array.list[ index ];
+      }
+    } else {
+      key = strdup(key);
+      if (parent->type == 0 || parent->type == YTF_TYPE_HASHTABLE) {
+        ytf_t* value = 0;
+        parent->type = YTF_TYPE_HASHTABLE;
+        if (ytf_hash_get(&(parent->value.hash), key, &value) != 0) {
+          value = calloc(1, sizeof(ytf_t));
+          ytf_hash_put(&(parent->value.hash), key, value);
+        }
+        parent = value;
+      }
+    }
+  }
+  return parent;
+}
+
+static
+void flat_parse_value
+  (gpeg_capture_t* c, ytf_t* value)
+{
+  switch (c->children.list[ 0 ].type) {
+  case SLOT_NULL:
+    value->type = YTF_TYPE_NULL;
+    break;
+  case SLOT_BOOL:
+    value->type = YTF_TYPE_BOOLEAN;
+    if (0 == strcmp((char*)(c->children.list[ 0 ].data.data), "true")) {
+      value->value.boolint = 1;
+    }
+    break;
+  case SLOT_FLOAT:
+    value->type = YTF_TYPE_FLOAT;
+    value->value.fraction = strtod((char*)(c->children.list[ 0 ].data.data), 0);
+    break;
+  case SLOT_INT:
+    value->type = YTF_TYPE_INTEGER;
+    value->value.boolint = strtoll((char*)(c->children.list[ 0 ].data.data), 0, 10);
+    break;
+  case SLOT_STRING:
+    value->type = YTF_TYPE_STRING;
+    vec_reduce(&(c->children.list[ 0 ].data), 1);
+    vec_delete(&(c->children.list[ 0 ].data), 0, 1);
+    value->value.string = c->children.list[ 0 ].data;
+//.. unescape
+    c->children.list[ 0 ].data.data = NULL;
+    c->children.list[ 0 ].data.size = 0;
+    break;
+  case SLOT_BLOB:
+    value->type = YTF_TYPE_STRING;
+    vec_reduce(&(c->children.list[ 0 ].data), 1);
+    vec_delete(&(c->children.list[ 0 ].data), 0, 4);
+    if (vec_base64_decode(&(c->children.list[ 0 ].data))) { }
+    value->value.string = c->children.list[ 0 ].data;
+    c->children.list[ 0 ].data.data = NULL;
+    c->children.list[ 0 ].data.size = 0;
+    break;
+  }
+}
+
+static
 void flat_parse_nvpair
   (gpeg_capture_t* c, ytf_t* ytf)
 {
+  ytf_t value = { 0 };
+  flat_parse_value(&(c->children.list[ 2 ]), &value);
+  ytf_t* name = flat_parse_assert_path(ytf, &(c->children.list[ 0 ]));
+  *name = value;
+}
+
+static
+ytf_t* flat_parse_object
+  (gpeg_capture_t* tag, gpeg_capture_t* object)
+{
+  ytf_t* result = calloc(1, sizeof(ytf_t));
+  (void)tag;
+
+  for (unsigned i=0; i < object->children.count; i++) {
+    flat_parse_nvpair(&(object->children.list[ i ]), result);
+  }
+  return result;
 }
 
 /**
  *
  */
-ytf_t* flat_parse
-  (gpeg_capture_t* c)
+void flat_parse
+  (gpeg_capture_t* c, ytf_array_t* array)
 {
-  switch (c->type) {
-  case SLOT_YTF:
-    break;
-  case SLOT_NEWLINE:
-    break;
-  case SLOT_SPACE:
-    break;
-  case SLOT_MULTILINECOMMENT:
-    break;
-  case SLOT_COMMENT:
-    break;
-  case SLOT_OBJECTS:
-    break;
-  case SLOT_SEPARATOR:
-    break;
-  case SLOT_OBJECT:
-    {
-      ytf_t* ytf = calloc(1, sizeof(ytf_t));
+  if (c->type == SLOT_YTF
+      && c->children.count >= 1
+      && c->children.list[ 0 ].type == SLOT_OBJECTS)
+  {
+    for (unsigned i=0; i < c->children.list[ 0 ].children.count; i += 2) {
+      ytf_t* ytf = flat_parse_object(
+                     &(c->children.list[ 0 ].children.list[ i ]),
+                     &(c->children.list[ 0 ].children.list[ i+1 ])
+                   );
+      ytf_array_push(array, ytf);
     }
-    break;
-  case SLOT_NVPAIR:
-    flat_parse_nvpair(c, ytf);
-    break;
-  case SLOT_NAME:
-    break;
-  case SLOT_NAMEELT:
-    break;
-  case SLOT_DOT:
-    break;
-  case SLOT_COLON:
-    break;
-  case SLOT_VALUE:
-    break;
-  case SLOT_NULL:
-    break;
-  case SLOT_BOOL:
-    break;
-  case SLOT_FLOAT:
-    break;
-  case SLOT_INT:
-    break;
-  case SLOT_STRING:
-    break;
-  case SLOT_BLOB:
-    break;
-  case SLOT_END:
-    break;
   }
-  return ytf;
 }

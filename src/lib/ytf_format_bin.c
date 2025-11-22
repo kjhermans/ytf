@@ -65,7 +65,7 @@ void ytf_encode_tuple
     ytf_encode_bit(p, 0);
     break;
   case YTF_TYPE_HASHTABLE:
-    for (unsigned i=0; i < ytf->value.array.count; i++) {
+    for (unsigned i=0; i < ytf->value.hash.count; i++) {
       ytf_encode_bit(p, 1);
       ytf_encode_buffer(p, (unsigned char*)(ytf->value.hash.keys[ i ]), strlen(ytf->value.hash.keys[ i ]));
       ytf_encode_tuple(p, ytf->value.hash.values[ i ]);

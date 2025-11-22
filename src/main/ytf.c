@@ -41,20 +41,60 @@ int main
 {
   char* inputfile = "-";
   vec_t input = { 0 };
+  vec_t output = { 0 };
+  int outfmt = 0;
   ytf_t ytf = { 0 };
+  ytf_array_t array = { 0 };
 
   if (queryargs(argc, argv, 'i', "input", 0, 1, 0, &inputfile) == 0) {
   }
   if (absorb_file(inputfile, &(input.data), &(input.size))) {
   }
+  if (queryargs(argc, argv, 'J', "JSON", 0, 0, 0, 0) == 0) {
+    outfmt = 0;
+  } else if (queryargs(argc, argv, 'F', "FLAT", 0, 0, 0, 0) == 0) {
+    outfmt = 1;
+  } else if (queryargs(argc, argv, 'B', "BINARY", 0, 0, 0, 0) == 0) {
+    outfmt = 2;
+  }
   if (queryargs(argc, argv, 'j', "json", 0, 0, 0, 0) == 0) {
     if (ytf_parse_json(&input, &ytf)) {
+//..
     }
   } else if (queryargs(argc, argv, 'b', "binary", 0, 0, 0, 0) == 0) {
     ytf_parse_bin(&input, &ytf);
   } else if (queryargs(argc, argv, 'f', "flat", 0, 0, 0, 0) == 0) {
-    if (ytf_parse_flat(&input, &ytf)) {
+    if (ytf_parse_flat(&input, &array)) {
+//..
     }
   }
+  if (array.count) {
+    for (unsigned i=0; i < array.count; i++) {
+      switch (outfmt) {
+      case 0:
+        ytf_format_json(array.list[ i ], &output);
+        break;
+      case 1:
+        ytf_format_flat(array.list[ i ], &output);
+        break;
+      case 2:
+        ytf_format_bin(array.list[ i ], &output);
+        break;
+      }
+    }
+  } else {
+    switch (outfmt) {
+      case 0:
+        ytf_format_json(&ytf, &output);
+        break;
+      case 1:
+        ytf_format_flat(&ytf, &output);
+        break;
+      case 2:
+        ytf_format_bin(&ytf, &output);
+        break;
+    }
+  }
+  if (write_insistent(1, output.data, output.size, 0)) { }
   return 0;
 }
