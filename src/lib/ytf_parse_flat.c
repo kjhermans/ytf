@@ -53,11 +53,12 @@ int ytf_parse_flat
   ASSERT(string)
   ASSERT(obj)
 
+  ytf_t* localtop;
   gpege_ec_t result = { 0 };
   gpeg_capturelist_t resobj = { 0 };
   GPEG_ERR_T e;
 
-  result.input = string;
+  result.input = (vec_t*)string;
   result.errorstr = &err;
   if (parser_init == 0) {
     gpege_init(&parser);
@@ -79,7 +80,12 @@ int ytf_parse_flat
   }
   gpege_ec_free(&result);
 
-  int i = flat_grammar_process_node(&(resobj.list[ 0 ]), NULL); (void)i;
+  if ((localtop = flat_parse(&(resobj.list[ 0 ]))) == NULL) {
+    gpeg_capturelist_free(&resobj);
+    return ~0;
+  }
+  *ytf = *localtop;
+  free(localtop);
   gpeg_capturelist_free(&resobj);
 
   return 0;
