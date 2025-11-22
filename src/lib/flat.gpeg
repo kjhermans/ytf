@@ -13,7 +13,9 @@ OBJECT           <- NVPAIR+
 
 NVPAIR           <- NAME COLON VALUE [ \t]* NEWLINE
 
-NAME             <- [A-Za-z0-9_\-.]^1-64
+NAME             <- NAMEELT ( DOT NAMEELT )*
+NAMEELT          <- [A-Za-z0-9_\-]^1-64
+DOT              <- '.'
 COLON            <- ':'
 VALUE            <- NULL / BOOL / FLOAT / INT / STRING / BLOB
 

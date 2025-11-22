@@ -135,156 +135,176 @@ __L22:
 NAME:
   call __prefix
   opencapture 9
-  set 000000000060ff03feffff87feffff0700000000000000000000000000000000
+  call NAMEELT
   catch __L24
-  counter 1 63
 __L25:
-  set 000000000060ff03feffff87feffff0700000000000000000000000000000000
-  partialcommit __NEXT__
-  condjump 1 __L25
-  commit __NEXT__
+  call DOT
+  call NAMEELT
+  partialcommit __L25
 __L24:
   closecapture 9
   ret
 
-COLON:
+NAMEELT:
   call __prefix
   opencapture 10
-  char 3a
+  set 000000000020ff03feffff87feffff0700000000000000000000000000000000
+  catch __L26
+  counter 1 63
+__L27:
+  set 000000000020ff03feffff87feffff0700000000000000000000000000000000
+  partialcommit __NEXT__
+  condjump 1 __L27
+  commit __NEXT__
+__L26:
   closecapture 10
+  ret
+
+DOT:
+  call __prefix
+  opencapture 11
+  char 2e
+  closecapture 11
+  ret
+
+COLON:
+  call __prefix
+  opencapture 12
+  char 3a
+  closecapture 12
   ret
 
 VALUE:
   call __prefix
-  opencapture 11
-  catch __L26
+  opencapture 13
   catch __L28
   catch __L30
   catch __L32
   catch __L34
+  catch __L36
   call NULL
+  commit __L37
+__L36:
+  call BOOL
+__L37:
   commit __L35
 __L34:
-  call BOOL
+  call FLOAT
 __L35:
   commit __L33
 __L32:
-  call FLOAT
+  call INT
 __L33:
   commit __L31
 __L30:
-  call INT
+  call STRING
 __L31:
   commit __L29
 __L28:
-  call STRING
-__L29:
-  commit __L27
-__L26:
   call BLOB
-__L27:
-  closecapture 11
+__L29:
+  closecapture 13
   ret
 
 NULL:
   call __prefix
-  opencapture 12
+  opencapture 14
   quad 6e756c6c
-  closecapture 12
+  closecapture 14
   ret
 
 BOOL:
   call __prefix
-  opencapture 13
-  catch __L36
+  opencapture 15
+  catch __L38
   quad 66616c73
   char 65
-  commit __L37
-__L36:
+  commit __L39
+__L38:
   quad 74727565
-__L37:
-  closecapture 13
+__L39:
+  closecapture 15
   ret
 
 FLOAT:
   call __prefix
-  opencapture 14
-  catch __L38
-__L39:
-  set 000000000000ff03000000000000000000000000000000000000000000000000
-  partialcommit __L39
-__L38:
-  char 2e
-  set 000000000000ff03000000000000000000000000000000000000000000000000
+  opencapture 16
   catch __L40
 __L41:
   set 000000000000ff03000000000000000000000000000000000000000000000000
   partialcommit __L41
 __L40:
-  closecapture 14
-  ret
-
-INT:
-  call __prefix
-  opencapture 15
+  char 2e
   set 000000000000ff03000000000000000000000000000000000000000000000000
   catch __L42
 __L43:
   set 000000000000ff03000000000000000000000000000000000000000000000000
   partialcommit __L43
 __L42:
-  closecapture 15
+  closecapture 16
+  ret
+
+INT:
+  call __prefix
+  opencapture 17
+  set 000000000000ff03000000000000000000000000000000000000000000000000
+  catch __L44
+__L45:
+  set 000000000000ff03000000000000000000000000000000000000000000000000
+  partialcommit __L45
+__L44:
+  closecapture 17
   ret
 
 STRING:
   call __prefix
-  opencapture 16
+  opencapture 18
   char 22
-  catch __L44
-__L45:
   catch __L46
+__L47:
+  catch __L48
   char 5c
   set 0000000004000000000000100000000000000000000000000000000000000000
-  commit __L47
-__L46:
-  catch __L48
+  commit __L49
+__L48:
+  catch __L50
   char 22
   failtwice
-__L48:
+__L50:
   any
-__L47:
-  partialcommit __L45
-__L44:
+__L49:
+  partialcommit __L47
+__L46:
   char 22
-  closecapture 16
+  closecapture 18
   ret
 
 BLOB:
   call __prefix
-  opencapture 17
+  opencapture 19
   quad 62363428
   set 000600000188ff03feffff07feffff0700000000000000000000000000000000
-  catch __L50
-__L51:
-  set 000600000188ff03feffff07feffff0700000000000000000000000000000000
-  partialcommit __L51
-__L50:
   catch __L52
 __L53:
-  set 0006000001000020000000000000000000000000000000000000000000000000
+  set 000600000188ff03feffff07feffff0700000000000000000000000000000000
   partialcommit __L53
 __L52:
+  catch __L54
+__L55:
+  set 0006000001000020000000000000000000000000000000000000000000000000
+  partialcommit __L55
+__L54:
   char 29
-  closecapture 17
+  closecapture 19
   ret
 
 END:
   call __prefix
-  opencapture 18
-  catch __L54
+  opencapture 20
+  catch __L56
   any
   failtwice
-__L54:
-  closecapture 18
+__L56:
+  closecapture 20
   ret
 
