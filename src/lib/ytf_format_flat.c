@@ -115,11 +115,17 @@ void _ytf_format_flat
   }
 }
 
-void ytf_format_flat
-  (ytf_t* ytf, vec_t* flat)
+void ytf_format_flat_tagged
+  (ytf_t* ytf, vec_t* flat, char* tag)
 {
   vec_t key = { 0 };
 
-  vec_appendstr(flat, "#ytf\n");
+  vec_printf(flat, "#%s\n", tag);
   _ytf_format_flat(ytf, &key, flat);
+}
+
+void ytf_format_flat
+  (ytf_t* ytf, vec_t* flat)
+{
+  ytf_format_flat_tagged(ytf, flat, "ytf");
 }
