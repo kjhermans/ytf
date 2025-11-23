@@ -74,6 +74,7 @@ ytf_t* ytf_parse_tuple
       vec_t key = { 0 };
       ytf_decode_buffer(p, &(key.data), &(key.size));
       ytf_t* value = ytf_parse_tuple(p);
+      if (key.data == NULL) { key.data = (unsigned char*)strdup(""); }
       ytf_hash_put(&(ytf->value.hash), (char*)(key.data), value);
       ytf_decode_bit(p, &tmp);
     }
@@ -94,5 +95,20 @@ void ytf_parse_bin
   while (!(p.eof)) {
     ytf_t* elt = ytf_parse_tuple(&p);
     ytf_array_push(&(ytf->value.array), elt);
+  }
+
+  while (ytf->value.array.count) {
+    ytf_t* child = ytf->value.array.list[ ytf->value.array.count-1 ];
+    if (child->type == 0) {
+      --(ytf->value.array.count);
+      free(child);
+    } else {
+      break;
+    }
+  }
+  if (ytf->value.array.count == 1) {
+    ytf_t* child = ytf->value.array.list[ 0 ];
+    free(ytf->value.array.list);
+    *ytf = *child;
   }
 }
