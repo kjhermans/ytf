@@ -34,5 +34,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ytf/lib.h>
 
 MAKE_ARRAY_CODE(ytf_t*, ytf_array_)
+
+#undef MAP_EQUALS
+#define MAP_EQUALS(a,b) (0==strcmp(a,b))
 MAKE_MAP_CODE(char*, ytf_t*, ytf_hash_)
 
