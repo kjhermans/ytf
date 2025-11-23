@@ -126,10 +126,9 @@ void flat_parse_nvpair
 
 static
 ytf_t* flat_parse_object
-  (gpeg_capture_t* tag, gpeg_capture_t* object)
+  (gpeg_capture_t* object)
 {
   ytf_t* result = calloc(1, sizeof(ytf_t));
-  (void)tag;
 
   for (unsigned i=0; i < object->children.count; i++) {
     flat_parse_nvpair(&(object->children.list[ i ]), result);
@@ -147,12 +146,14 @@ void flat_parse
       && c->children.count >= 1
       && c->children.list[ 0 ].type == SLOT_OBJECTS)
   {
-    for (unsigned i=0; i < c->children.list[ 0 ].children.count; i += 2) {
-      ytf_t* ytf = flat_parse_object(
-                     &(c->children.list[ 0 ].children.list[ i ]),
-                     &(c->children.list[ 0 ].children.list[ i+1 ])
-                   );
-      ytf_array_push(array, ytf);
+    for (unsigned i=0; i < c->children.list[ 0 ].children.count; i++) {
+      gpeg_capture_t* object = &(c->children.list[ 0 ].children.list[ i ]);
+      if (object->type == SLOT_OBJECT) {
+        ytf_t* ytf = flat_parse_object(
+                       &(c->children.list[ 0 ].children.list[ i ])
+                     );
+        ytf_array_push(array, ytf);
+      }
     }
   }
 }
