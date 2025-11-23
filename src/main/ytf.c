@@ -71,6 +71,7 @@ int main
     }
   }
   if (array.count) {
+    ytf_parse_t state = { 0 };
     fprintf(stderr, "Warning: Multiple objects in output.\n");
     for (unsigned i=0; i < array.count; i++) {
       switch (outfmt) {
@@ -81,12 +82,14 @@ int main
         ytf_format_flat(array.list[ i ], &output);
         break;
       case 2:
-        ytf_format_bin(array.list[ i ], &output);
+        ytf_format_bin_continuous(array.list[ i ], &state);
         break;
       }
-      if (write_insistent(1, output.data, output.size, 0)) { }
-      output.size = 0;
     }
+    if (outfmt == 2) {
+      output = state.buf;
+    }
+    if (write_insistent(1, output.data, output.size, 0)) { }
   } else {
     switch (outfmt) {
       case 0:
