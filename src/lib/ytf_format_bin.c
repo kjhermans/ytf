@@ -52,7 +52,7 @@ void ytf_encode_tuple
     ytf_encode_int(p, ytf->value.boolint);
     break;
   case YTF_TYPE_FLOAT:
-    ytf_encode_int(p, ytf->value.fraction);
+    ytf_encode_float(p, ytf->value.fraction);
     break;
   case YTF_TYPE_STRING:
     ytf_encode_buffer(p, ytf->value.string.data, ytf->value.string.size);
