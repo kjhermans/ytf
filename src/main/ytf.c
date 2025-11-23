@@ -71,6 +71,7 @@ int main
     }
   }
   if (array.count) {
+    fprintf(stderr, "Warning: Multiple objects in output.\n");
     for (unsigned i=0; i < array.count; i++) {
       switch (outfmt) {
       case 0:
@@ -83,6 +84,8 @@ int main
         ytf_format_bin(array.list[ i ], &output);
         break;
       }
+      if (write_insistent(1, output.data, output.size, 0)) { }
+      output.size = 0;
     }
   } else {
     switch (outfmt) {
@@ -96,7 +99,7 @@ int main
         ytf_format_bin(&ytf, &output);
         break;
     }
+    if (write_insistent(1, output.data, output.size, 0)) { }
   }
-  if (write_insistent(1, output.data, output.size, 0)) { }
   return 0;
 }
