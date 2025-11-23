@@ -101,6 +101,11 @@ void ytf_decode_lv
 
 /* declared in ./ytf_format_bin.c */
 extern
+void ytf_format_bin_continuous
+  (ytf_t* ytf, ytf_parse_t* state);
+
+/* declared in ./ytf_format_bin.c */
+extern
 void ytf_format_bin
   (ytf_t* ytf, vec_t* bin);
 

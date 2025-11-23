@@ -75,6 +75,12 @@ void ytf_encode_tuple
   }
 }
 
+void ytf_format_bin_continuous
+  (ytf_t* ytf, ytf_parse_t* state)
+{
+  ytf_encode_tuple(state, ytf);
+}
+
 /**
  *
  */
