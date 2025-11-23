@@ -59,13 +59,15 @@ int main
   }
   if (queryargs(argc, argv, 'j', "json", 0, 0, 0, 0) == 0) {
     if (ytf_parse_json(&input, &ytf)) {
-//..
+      fprintf(stderr, "JSON format parsing error.\n");
+      exit(1);
     }
   } else if (queryargs(argc, argv, 'b', "binary", 0, 0, 0, 0) == 0) {
     ytf_parse_bin(&input, &ytf);
   } else if (queryargs(argc, argv, 'f', "flat", 0, 0, 0, 0) == 0) {
     if (ytf_parse_flat(&input, &array)) {
-//..
+      fprintf(stderr, "Flat format parsing error.\n");
+      exit(1);
     }
   }
   if (array.count) {
