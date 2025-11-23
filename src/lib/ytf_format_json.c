@@ -106,8 +106,11 @@ void ytf_format_json
   case YTF_TYPE_HASHTABLE:
     vec_appendchr(json, '{');
     for (unsigned i=0; i < ytf->value.hash.count; i++) {
+      char* key = ytf->value.hash.keys[ i ];
       vec_appendchr(json, '"');
-      ytf_format_json_string((unsigned char*)(ytf->value.hash.keys[ i ]), strlen(ytf->value.hash.keys[ i ]), json);
+      if (key) {
+        ytf_format_json_string((unsigned char*)key, strlen(key), json);
+      }
       vec_appendstr(json, "\":");
       ytf_format_json(ytf->value.hash.values[ i ], json);
       if (i < ytf->value.hash.count - 1) {
