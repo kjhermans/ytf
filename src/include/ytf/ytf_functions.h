@@ -67,7 +67,7 @@ void ytf_encode_buffer
 /* declared in ./ytf_encode_buffer.c */
 extern
 void ytf_decode_buffer
-  (ytf_parse_t* ytf, unsigned char** buf, unsigned* size);
+  (ytf_parse_t* ytf, vec_t* vec);
 
 /* declared in ./ytf_encode_float.c */
 extern

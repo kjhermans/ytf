@@ -67,7 +67,7 @@ int main
     enclen = ytf.buf.size;
     ytf.byteoffset = 0;
     ytf.bitoffset = 0;
-    ytf_decode_buffer(&ytf, &(compare.data), &(compare.size));
+    ytf_decode_buffer(&ytf, &compare);
     if (compare.size == strlen(test) &&
         0 == memcmp(test, compare.data, compare.size))
     {

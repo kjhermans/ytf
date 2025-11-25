@@ -58,7 +58,7 @@ ytf_t* ytf_parse_tuple
     ytf_decode_float(p, &(ytf->value.fraction));
     break;
   case YTF_TYPE_STRING:
-    ytf_decode_buffer(p, &(ytf->value.string.data), &(ytf->value.string.size));
+    ytf_decode_buffer(p, &(ytf->value.string));
     break;
   case YTF_TYPE_ARRAY:
     ytf_decode_bit(p, &tmp);
@@ -72,7 +72,7 @@ ytf_t* ytf_parse_tuple
     ytf_decode_bit(p, &tmp);
     while (tmp) {
       vec_t key = { 0 };
-      ytf_decode_buffer(p, &(key.data), &(key.size));
+      ytf_decode_buffer(p, &key);
       ytf_t* value = ytf_parse_tuple(p);
       if (key.data == NULL) { key.data = (unsigned char*)strdup(""); }
       ytf_hash_put(&(ytf->value.hash), (char*)(key.data), value);

@@ -35,6 +35,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ytf/ytf_dictionary.h>
 
 static
+int use_compression = 0;
+
+/** ---- dictionary based compression ---- */
+
+static
 unsigned char dictionary[ ][ 4 ] = { YTF_DICTIONARY };
 
 static
@@ -102,10 +107,8 @@ void ytf_encode_buffer_uncompressed
   }
 }
 
-/**
- *
- */
-void ytf_encode_buffer
+static
+void ytf_encode_buffer_compression
   (ytf_parse_t* ytf, unsigned char* buf, unsigned size)
 {
   vec_t compr = { 0 };
@@ -175,11 +178,8 @@ void ytf_encode_buffer
   ytf_encode_bit(ytf, 0); // stop
 }
 
-/**
- * Callers will have to (optionally) relinquish *buf before calling,
- * and free *buf after return, because this function mallocs it.
- */
-void ytf_decode_buffer
+static
+void ytf_decode_buffer_compression
   (ytf_parse_t* ytf, unsigned char** buf, unsigned* size)
 {
   vec_t result = { 0 };
@@ -211,4 +211,85 @@ void ytf_decode_buffer
   }
   *buf = result.data;
   *size = result.size;
+}
+
+/** ---- chunked ---- */
+
+static
+void ytf_encode_buffer_chunked
+  (ytf_parse_t* ytf, unsigned char* data, unsigned size)
+{
+  while (size) {
+    unsigned chunklen = 1024;
+    ytf_encode_bit(ytf, 1); // continue
+    if (size < chunklen) {
+      chunklen = size;
+      ytf_encode_bit(ytf, 0); // short chunk
+      ytf_encode_bits(ytf, chunklen, 10);
+    } else {
+      ytf_encode_bit(ytf, 1); // long chunk
+    }
+    for (unsigned i=0; i < chunklen; i++) {
+      ytf_encode_byte(ytf, data[ i ]);
+    }
+    size -= chunklen;
+    data += chunklen;
+  }
+  ytf_encode_bit(ytf, 0); // stop
+}
+
+static
+void ytf_decode_buffer_chunked
+  (ytf_parse_t* ytf, vec_t* vec)
+{
+  while (!(ytf->eof)) {
+    unsigned cont = 0, longchunk = 0;
+    ytf_decode_bit(ytf, &cont);
+    if (!cont) {
+      break;
+    }
+    ytf_decode_bit(ytf, &longchunk);
+    if (longchunk) {
+      for (unsigned i=0; i < 1024; i++) {
+        unsigned char B = 0;
+        ytf_decode_byte(ytf, &B);
+        vec_appendchr(vec, B);
+      }
+    } else {
+      unsigned chunklen = 0;
+      ytf_decode_bits(ytf, &chunklen, 10);
+      for (unsigned i=0; i < chunklen; i++) {
+        unsigned char B = 0;
+        ytf_decode_byte(ytf, &B);
+        vec_appendchr(vec, B);
+      }
+    }
+  }
+}
+
+/** ---- main entry points ---- **/
+
+void ytf_encode_buffer
+  (ytf_parse_t* ytf, unsigned char* buf, unsigned size)
+{
+  if (use_compression) {
+    ytf_encode_bit(ytf, 1);
+    ytf_encode_buffer_compression(ytf, buf, size);
+  } else {
+    ytf_encode_bit(ytf, 0);
+    ytf_encode_buffer_chunked(ytf, buf, size);
+  }
+}
+
+void ytf_decode_buffer
+  (ytf_parse_t* ytf, vec_t* vec)
+{
+  unsigned compression_used = 0;
+
+  ytf_decode_bit(ytf, &compression_used);
+  if (compression_used) {
+    ytf_decode_buffer_compression(ytf, &(vec->data), &(vec->size));
+  } else {
+    ytf_decode_buffer_chunked(ytf, vec);
+  }
 }
