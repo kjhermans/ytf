@@ -70,7 +70,7 @@ int main
       break;
     }
 
-    vec_t json = { jsonstring, strlen(jsonstring) };
+    vec_t json = { (unsigned char*)jsonstring, strlen(jsonstring) };
     vec_t json_compare = { 0 };
 
     if (ytf_parse_json(&json, &ytf)) {

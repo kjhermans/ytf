@@ -42,48 +42,34 @@ int main
 {
   (void)argc;
   (void)argv;
-  char* tests[] = {
-    "[1]",
-    "[1,2,3]",
-    "{\"foo\":\"bar\"}",
-    "{\"foo\":{}}",
-    "{\"foo\":[]}",
-    "{\"foo\":1.0}",
-    "{\"foo\":1.1}",
-    "{\"foo\":-1.1}",
-    "{\"foo\":9.19999980926513671875}",
-    "{\"foo\":[1,2,3]}",
-    "{\"foo\":\"bar\",\"oi\":\"foobar\"}",
-    "{\"foo\":\"bar\",\"foo\":\"oi\"}",
-    "{\"a\":[\"a\",0.444,false,3]}",
-    "{\"a\":[\"a\",0.444,false,3],\"b\":{\"c\":{\"d\":[3,3,3,3,3.141592]}}}",
-    "{\"a\":\"It was the best of times, it was the worst of times.\"}",
-    NULL
-  };
-  unsigned i=0;
 
-  while (1) {
-    ytf_t ytf = { 0 };
-    char* jsonstring = tests[ i++ ];
+  char* test = "#foo\n"
+               "bar:b64(AAAAAAAAAAAA)\n"
+               "#test\n"
+               "oi:3.141592\n";
 
-    if (jsonstring == NULL) {
-      break;
-    }
+  vec_t        stage0_flat   = { (unsigned char*)test, strlen(test) };
+  ytf_array_t  stage0_ytf    = { 0 };
+  ytf_parse_t  stage0_format = { 0 };
+  vec_t        stage1_bin    = { 0 };
+  ytf_t        stage1_ytf    = { 0 };
+  vec_t        stage2_flat   = { 0 };
+  vec_t        stage3_bin    = { 0 };
+  vec_t        stage4_flat   = { 0 };
 
-    vec_t json = { (unsigned char*)jsonstring, strlen(jsonstring) };
-    vec_t flat = { 0 };
-
-    if (ytf_parse_json(&json, &ytf)) {
-      fprintf(stderr, "Failed at %s\n", jsonstring);
-      return ~0;
-    }
-
-    ytf_format_flat(&ytf, &flat);
-    if (flat.data) {
-      fprintf(stderr, "%s", (char*)(flat.data));
-    } else {
-      fprintf(stderr, "NULL\n");
-    }
+  if (ytf_parse_flat(&stage0_flat, &stage0_ytf)) {
+    fprintf(stderr, "Stage0 parse flat failed.\n");
+    exit(1);
   }
+  for (unsigned i=0; i < stage0_ytf.count; i++) {
+    ytf_format_bin_continuous(stage0_ytf.list[ i ], &stage0_format);
+  }
+
+  stage1_bin = stage0_format.buf;
+  ytf_parse_bin(&stage1_bin, &stage1_ytf);
+
+  ytf_format_flat(&stage1_ytf, &stage2_flat);
+  fprintf(stderr, "%s", stage2_flat.data);
+
   return 0;
 }
