@@ -52,6 +52,16 @@ void json_parse_hashelt
 }
 
 static
+unsigned hexdecode
+  (char c)
+{
+  if (c >= '0' && c <= '9') { return (c - '0'); }
+  if (c >= 'a' && c <= 'f') { return (c + 10 - 'a'); }
+  if (c >= 'A' && c <= 'F') { return (c + 10 - 'A'); }
+  return 0;
+}
+
+static
 void json_parse_string
   (gpeg_capture_t* parent, ytf_t* elt)
 {
@@ -64,11 +74,15 @@ void json_parse_string
       case 'n': vec_appendchr(&(elt->value.string), 0x0a); break;
       case 'r': vec_appendchr(&(elt->value.string), 0x0d); break;
       case 't': vec_appendchr(&(elt->value.string), 0x09); break;
-      case 'b': vec_appendchr(&(elt->value.string), 0x08); break;
-      case 'f': vec_appendchr(&(elt->value.string), 0x0c); break;
       case '"': vec_appendchr(&(elt->value.string), 0x22); break;
       case '\\': vec_appendchr(&(elt->value.string), 0x5c); break;
-      case 'u': /* TODO: Unicode escape */ break;
+      case 'u':
+        if (child->data.data[ 1 ] == '0' && child->data.data[ 2 ] == '0') {
+          vec_appendchr(&(elt->value.string),
+                          ((hexdecode(child->data.data[ 3 ]) << 4) |
+                            hexdecode(child->data.data[ 4 ])));
+        }
+        break;
       }
     }
   }

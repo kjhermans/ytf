@@ -48,14 +48,14 @@ void ytf_format_json_string
       case '\t':
         vec_appendstr(json, "\\t"); break;
       default:
-        vec_printf(json, "\\x%.2x", str[ i ]);
+        vec_printf(json, "\\u00%.2x", str[ i ]);
       }
     } else if (str[ i ] == '"') {
       vec_appendstr(json, "\\\"");
     } else if (str[ i ] == '\\') {
       vec_appendstr(json, "\\\\");
     } else if (str[ i ] > 127) {
-      vec_printf(json, "\\x%.2x", str[ i ]);
+      vec_printf(json, "\\u00%.2x", str[ i ]);
     } else {
       vec_appendchr(json, str[ i ]);
     }
