@@ -72,7 +72,9 @@ int main
   }
   if (array.count) {
     ytf_parse_t state = { 0 };
-    fprintf(stderr, "Warning: Multiple objects in output.\n");
+    if (array.count > 1) {
+      fprintf(stderr, "Warning: Multiple objects in output.\n");
+    }
     for (unsigned i=0; i < array.count; i++) {
       switch (outfmt) {
       case 0:
