@@ -129,6 +129,11 @@ extern
 void ytf_format_json
   (ytf_t* ytf, vec_t* json);
 
+/* declared in ./ytf_free.c */
+extern
+void ytf_free
+  (ytf_t* ytf);
+
 /* declared in ./ytf_parse_bin.c */
 extern
 void ytf_parse_bin
