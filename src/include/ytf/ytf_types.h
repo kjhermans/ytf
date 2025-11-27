@@ -50,7 +50,7 @@ MAKE_MAP_HEADER(char*, ytf_t*, ytf_hash_)
 
 struct ytf
 {
-  int           type;
+  unsigned      type;
   union {
     int64_t       boolint;
     double        fraction;
