@@ -151,6 +151,12 @@ int ytf_parse_json
   (const vec_t* string, ytf_t* ytf)
   __attribute__ ((warn_unused_result));
 
+/* declared in ./ytf_query.c */
+extern
+int ytf_query
+  (const ytf_t* object, const char* path, ytf_t** result)
+  __attribute__ ((warn_unused_result));
+
 
 
 #endif
