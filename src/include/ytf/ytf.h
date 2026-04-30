@@ -41,10 +41,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <util/array.h>
 #include <util/vec_t.h>
 
-#include <gpeg/lib/gpeg/gpeg_types.h>
-#include <gpeg/lib/engine/gpege.h>
+#include <gpeg/engine/gpeg_engine.h>
 
-#include <util/util_functions.h>
+#include <andy/util_functions.h>
 
 #include "ytf_defines.h"
 #include "ytf_types.h"

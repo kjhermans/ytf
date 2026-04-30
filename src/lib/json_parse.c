@@ -35,17 +35,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "json_slotmap.h"
 
 ytf_t* json_parse
-  (gpeg_capture_t* c);
+  (gpege_node_t* c);
 
 static
 void json_parse_hashelt
-  (gpeg_capture_t* c, ytf_t* parent)
+  (gpege_node_t* c, ytf_t* parent)
 {
   switch (c->type) {
-  case SLOT_HASHELT:
+  case SLOT_HASHELT_0:
     {
-      char* name = strdup((char*)(c->children.list[ 0 ].data.data));
-      ytf_t* value = json_parse(&(c->children.list[ 1 ]));
+      char* name = strdup((char*)(c->children[ 0 ]->vec.data));
+      ytf_t* value = json_parse(c->children[ 1 ]);
       ytf_hash_put(&(parent->value.hash), name, value);
     }
   }
@@ -63,24 +63,24 @@ unsigned hexdecode
 
 static
 void json_parse_string
-  (gpeg_capture_t* parent, ytf_t* elt)
+  (gpege_node_t* parent, ytf_t* elt)
 {
-  for (unsigned i=0; i < parent->children.count; i++) {
-    gpeg_capture_t* child = &(parent->children.list[ i ]);
-    if (child->type == SLOT_UTF8CHAR) {
-      vec_append(&(elt->value.string), child->data.data, child->data.size);
+  for (unsigned i=0; i < parent->nchildren; i++) {
+    gpege_node_t* child = parent->children[ i ];
+    if (child->type == SLOT_UTF8CHAR_0) {
+      vec_append(&(elt->value.string), child->vec.data, child->vec.size);
     } else if (child->type == SLOT_STRING_0) {
-      switch (child->data.data[ 0 ]) {
+      switch (child->vec.data[ 0 ]) {
       case 'n': vec_appendchr(&(elt->value.string), 0x0a); break;
       case 'r': vec_appendchr(&(elt->value.string), 0x0d); break;
       case 't': vec_appendchr(&(elt->value.string), 0x09); break;
       case '"': vec_appendchr(&(elt->value.string), 0x22); break;
       case '\\': vec_appendchr(&(elt->value.string), 0x5c); break;
       case 'u':
-        if (child->data.data[ 1 ] == '0' && child->data.data[ 2 ] == '0') {
+        if (child->vec.data[ 1 ] == '0' && child->vec.data[ 2 ] == '0') {
           vec_appendchr(&(elt->value.string),
-                          ((hexdecode(child->data.data[ 3 ]) << 4) |
-                            hexdecode(child->data.data[ 4 ])));
+                          ((hexdecode(child->vec.data[ 3 ]) << 4) |
+                            hexdecode(child->vec.data[ 4 ])));
         }
         break;
       }
@@ -92,31 +92,31 @@ void json_parse_string
  *
  */
 ytf_t* json_parse
-  (gpeg_capture_t* c)
+  (gpege_node_t* c)
 {
   switch (c->type) {
-  case SLOT_HASH:
+  case SLOT_HASH_0:
     {
       ytf_t* ytf = calloc(1, sizeof(ytf_t));
       ytf->type = YTF_TYPE_HASHTABLE;
-      for (unsigned i=0; i < c->children.count; i++) {
-        json_parse_hashelt(&(c->children.list[ i ]), ytf);
+      for (unsigned i=0; i < c->nchildren; i++) {
+        json_parse_hashelt(c->children[ i ], ytf);
       }
       return ytf;
     }
     break;
-  case SLOT_ARRAY:
+  case SLOT_ARRAY_0:
     {
       ytf_t* ytf = calloc(1, sizeof(ytf_t));
       ytf->type = YTF_TYPE_ARRAY;
-      for (unsigned i=0; i < c->children.count; i++) {
-        ytf_t* child = json_parse(&(c->children.list[ i ]));
+      for (unsigned i=0; i < c->nchildren; i++) {
+        ytf_t* child = json_parse(c->children[ i ]);
         ytf_array_push(&(ytf->value.array), child);
       }
       return ytf;
     }
     break;
-  case SLOT_BIGSTRING:
+  case SLOT_BIGSTRING_0:
     {
       ytf_t* ytf = calloc(1, sizeof(ytf_t));
       ytf->type = YTF_TYPE_STRING;
@@ -124,7 +124,7 @@ ytf_t* json_parse
       return ytf;
     }
     break;
-  case SLOT_STRING:
+  case SLOT_STRING_0:
     {
       ytf_t* ytf = calloc(1, sizeof(ytf_t));
       ytf->type = YTF_TYPE_STRING;
@@ -132,33 +132,33 @@ ytf_t* json_parse
       return ytf;
     }
     break;
-  case SLOT_INT:
+  case SLOT_INT_0:
     {
       ytf_t* ytf = calloc(1, sizeof(ytf_t));
       ytf->type = YTF_TYPE_INTEGER;
-      ytf->value.boolint = strtoll((char*)(c->data.data), 0, 10);
+      ytf->value.boolint = strtoll((char*)(c->vec.data), 0, 10);
       return ytf;
     }
     break;
-  case SLOT_FLOAT:
+  case SLOT_FLOAT_0:
     {
       ytf_t* ytf = calloc(1, sizeof(ytf_t));
       ytf->type = YTF_TYPE_FLOAT;
-      ytf->value.fraction = strtod((char*)(c->data.data), 0);
+      ytf->value.fraction = strtod((char*)(c->vec.data), 0);
       return ytf;
     }
     break;
-  case SLOT_BOOL:
+  case SLOT_BOOL_0:
     {
       ytf_t* ytf = calloc(1, sizeof(ytf_t));
       ytf->type = YTF_TYPE_BOOLEAN;
-      if (0 == strcmp((char*)(c->data.data), "true")) {
+      if (0 == strcmp((char*)(c->vec.data), "true")) {
         ytf->value.boolint = 1;
       }
       return ytf;
     }
     break;
-  case SLOT_NULL:
+  case SLOT_NULL_0:
     {
       ytf_t* ytf = calloc(1, sizeof(ytf_t));
       ytf->type = YTF_TYPE_NULL;

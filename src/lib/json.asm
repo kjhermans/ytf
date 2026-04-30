@@ -1,3 +1,5 @@
+-- GPEG compiler, release 0.5.6
+
   call TOP
   end 0
 
@@ -6,72 +8,94 @@ TOP:
   ret
 
 UTF8CHAR:
-  opencapture 0
-  any
-  closecapture 0
+  opencapture 1
+  range 00 ff
+  closecapture 1
   ret
 
 SPACE:
-  set 002e000001000000000000000000000000000000000000000000000000000000
-  catch __L1
-__L2:
-  set 002e000001000000000000000000000000000000000000000000000000000000
-  partialcommit __L2
-__L1:
+  catch MACRO2_1
+  range 09 0b
+  commit L2
+MACRO2_1:
+  catch MACRO2_2
+  range 0d
+  commit L2
+MACRO2_2:
+  range 20
+L2:
+  catch L1
+LOOP1:
+  catch MACRO3_1
+  range 09 0b
+  commit L3
+MACRO3_1:
+  catch MACRO3_2
+  range 0d
+  commit L3
+MACRO3_2:
+  range 20
+L3:
+  partialcommit LOOP1
+L1:
   ret
 
 MULTILINECOMMENT:
-  char 2f
-  char 2a
-  catch __L3
-__L4:
-  catch __L5
-  char 2a
-  char 2f
+  range 2f
+  range 2a
+  catch L4
+LOOP4:
+  catch L5
+  range 2a
+  range 2f
   failtwice
-__L5:
-  any
-  partialcommit __L4
-__L3:
-  char 2a
-  char 2f
+L5:
+  range 00 ff
+  partialcommit LOOP4
+L4:
+  range 2a
+  range 2f
   ret
 
 COMMENT:
-  char 2f
-  char 2f
-  catch __L7
-__L8:
-  set fffbffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-  partialcommit __L8
-__L7:
-  char 0a
+  range 2f
+  range 2f
+  catch L6
+LOOP6:
+  catch SET7_0
+  range 00 09
+  commit L7
+SET7_0:
+  range 0b ff
+L7:
+  partialcommit LOOP6
+L6:
+  range 0a
   ret
 
 __prefix:
-  catch __L9
-__L10:
-  catch __L11
-  catch __L13
+  catch L8
+LOOP8:
+  catch L10
   call MULTILINECOMMENT
-  commit __L14
-__L13:
+  commit L9
+L10:
+  catch L11
   call COMMENT
-__L14:
-  commit __L12
-__L11:
+  commit L9
+L11:
   call SPACE
-__L12:
-  partialcommit __L10
-__L9:
+L9:
+  partialcommit LOOP8
+L8:
   ret
 
 END:
   call __prefix
-  catch __L15
-  any
+  catch L13
+  range 00 ff
   failtwice
-__L15:
+L13:
   ret
 
 JSON:
@@ -82,130 +106,124 @@ JSON:
 
 HASH:
   call __prefix
-  opencapture 1
+  opencapture 2
   call CBOPEN
   call OPTHASHELTS
   call CBCLOSE
-  closecapture 1
+  closecapture 2
   ret
 
 OPTHASHELTS:
   call __prefix
-  catch __L17
+  catch L14
   call HASHELTS
   commit __NEXT__
-__L17:
+L14:
   ret
 
 HASHELTS:
   call __prefix
   call HASHELT
-  catch __L18
-__L19:
+  catch L15
+LOOP15:
   call COMMA
   call HASHELT
-  partialcommit __L19
-__L18:
+  partialcommit LOOP15
+L15:
   ret
 
 HASHELT:
   call __prefix
-  opencapture 2
+  opencapture 3
   call NAME
   call COLON
   call VALUE
-  closecapture 2
+  closecapture 3
   ret
 
 ARRAY:
   call __prefix
-  opencapture 3
+  opencapture 4
   call ABOPEN
   call OPTARRAYELTS
   call ABCLOSE
-  closecapture 3
+  closecapture 4
   ret
 
 OPTARRAYELTS:
   call __prefix
-  catch __L20
+  catch L16
   call ARRAYELTS
   commit __NEXT__
-__L20:
+L16:
   ret
 
 ARRAYELTS:
   call __prefix
   call VALUE
-  catch __L21
-__L22:
+  catch L17
+LOOP17:
   call COMMA
   call VALUE
-  partialcommit __L22
-__L21:
+  partialcommit LOOP17
+L17:
   ret
 
 VALUE:
   call __prefix
-  catch __L23
-  catch __L25
-  catch __L27
-  catch __L29
-  catch __L31
-  catch __L33
-  catch __L35
+  catch L19
   call BIGSTRING
-  commit __L36
-__L35:
+  commit L18
+L19:
+  catch L20
   call STRING
-__L36:
-  commit __L34
-__L33:
+  commit L18
+L20:
+  catch L21
   call FLOAT
-__L34:
-  commit __L32
-__L31:
+  commit L18
+L21:
+  catch L22
   call INT
-__L32:
-  commit __L30
-__L29:
+  commit L18
+L22:
+  catch L23
   call BOOL
-__L30:
-  commit __L28
-__L27:
+  commit L18
+L23:
+  catch L24
   call NULL
-__L28:
-  commit __L26
-__L25:
+  commit L18
+L24:
+  catch L25
   call HASH
-__L26:
-  commit __L24
-__L23:
+  commit L18
+L25:
   call ARRAY
-__L24:
+L18:
   ret
 
 BIGSTRING:
   call __prefix
-  char 22
-  char 22
-  char 22
-  opencapture 4
-  catch __L37
-__L38:
-  catch __L39
-  char 22
-  char 22
-  char 22
+  range 22
+  range 22
+  range 22
+  opencapture 5
+  catch L27
+LOOP27:
+  catch L28
+  range 22
+  range 22
+  range 22
   failtwice
-__L39:
+L28:
   call UTF8CHAR
-  partialcommit __L38
-__L37:
-  closecapture 4
-  char 22
-  char 22
-  char 22
+  partialcommit LOOP27
+L27:
+  closecapture 5
+  range 22
+  range 22
+  range 22
   ret
 
 NAME:
@@ -215,123 +233,163 @@ NAME:
 
 STRING:
   call __prefix
-  char 22
-  opencapture 5
-  catch __L41
-__L42:
-  catch __L43
-  char 5c
+  range 22
   opencapture 6
-  catch __L45
-  set 0000000004000000000000100040140000000000000000000000000000000000
-  commit __L46
-__L45:
-  char 75
-  counter 1 4
-__L47:
-  set 000000000000ff037e0000007e00000000000000000000000000000000000000
-  condjump 1 __L47
-__L46:
-  closecapture 6
-  commit __L44
-__L43:
-  catch __L48
-  char 22
+  catch L29
+LOOP29:
+  catch L31
+  range 5c
+  opencapture 7
+  catch L33
+  catch SET34_0
+  range 22 22
+  commit L34
+SET34_0:
+  catch SET34_1
+  range 5c 5c
+  commit L34
+SET34_1:
+  catch SET34_2
+  range 6e 6e
+  commit L34
+SET34_2:
+  catch SET34_3
+  range 72 72
+  commit L34
+SET34_3:
+  range 74 74
+L34:
+  commit L32
+L33:
+  range 75
+  counter 0 4
+CTR0:
+  catch SET36_0
+  range 30 39
+  commit L36
+SET36_0:
+  catch SET36_1
+  range 41 46
+  commit L36
+SET36_1:
+  range 61 66
+L36:
+  condjump 0 CTR0
+L32:
+  closecapture 7
+  commit L30
+L31:
+  catch L38
+  range 22
   failtwice
-__L48:
+L38:
   call UTF8CHAR
-__L44:
-  partialcommit __L42
-__L41:
-  closecapture 5
-  char 22
+L30:
+  partialcommit LOOP29
+L29:
+  closecapture 6
+  range 22
   ret
 
 INT:
   call __prefix
-  opencapture 7
-  catch __L50
-  char 2d
+  opencapture 8
+  catch L39
+  range 2d
   commit __NEXT__
-__L50:
-  set 000000000000ff03000000000000000000000000000000000000000000000000
-  catch __L51
-__L52:
-  set 000000000000ff03000000000000000000000000000000000000000000000000
-  partialcommit __L52
-__L51:
-  closecapture 7
+L39:
+  range 30 39
+L41:
+  catch L40
+LOOP40:
+  range 30 39
+L42:
+  partialcommit LOOP40
+L40:
+  closecapture 8
   ret
 
 FLOAT:
   call __prefix
-  opencapture 8
-  catch __L53
-  char 2d
+  opencapture 9
+  catch L43
+  range 2d
   commit __NEXT__
-__L53:
-  catch __L54
-__L55:
-  set 000000000000ff03000000000000000000000000000000000000000000000000
-  partialcommit __L55
-__L54:
-  char 2e
-  set 000000000000ff03000000000000000000000000000000000000000000000000
-  catch __L56
-__L57:
-  set 000000000000ff03000000000000000000000000000000000000000000000000
-  partialcommit __L57
-__L56:
-  closecapture 8
+L43:
+  catch L44
+LOOP44:
+  range 30 39
+L45:
+  partialcommit LOOP44
+L44:
+  range 2e
+  range 30 39
+L47:
+  catch L46
+LOOP46:
+  range 30 39
+L48:
+  partialcommit LOOP46
+L46:
+  closecapture 9
   ret
 
 BOOL:
   call __prefix
-  opencapture 9
-  catch __L58
-  quad 74727565
-  commit __L59
-__L58:
-  quad 66616c73
-  char 65
-__L59:
-  closecapture 9
+  opencapture 10
+  catch L50
+  range 74
+  range 72
+  range 75
+  range 65
+  commit L49
+L50:
+  range 66
+  range 61
+  range 6c
+  range 73
+  range 65
+L49:
+  closecapture 10
   ret
 
 NULL:
   call __prefix
-  opencapture 10
-  quad 6e756c6c
-  closecapture 10
+  opencapture 11
+  range 6e
+  range 75
+  range 6c
+  range 6c
+  closecapture 11
   ret
 
 CBOPEN:
   call __prefix
-  char 7b
+  range 7b
   ret
 
 CBCLOSE:
   call __prefix
-  char 7d
+  range 7d
   ret
 
 ABOPEN:
   call __prefix
-  char 5b
+  range 5b
   ret
 
 ABCLOSE:
   call __prefix
-  char 5d
+  range 5d
   ret
 
 COMMA:
   call __prefix
-  char 2c
+  range 2c
   ret
 
 COLON:
   call __prefix
-  char 3a
+  range 3a
   ret
 

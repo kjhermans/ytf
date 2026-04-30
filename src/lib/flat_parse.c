@@ -36,12 +36,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static
 ytf_t* flat_parse_assert_path
-  (ytf_t* top, gpeg_capture_t* c)
+  (ytf_t* top, gpege_node_t* c)
 {
   ytf_t* parent = top;
 
-  for (unsigned i=0; i < c->children.count; i += 2) {
-    char* key = (char*)(c->children.list[ i ].data.data);
+  for (unsigned i=0; i < c->nchildren; i += 2) {
+    char* key = (char*)(c->children[ i ]->vec.data);
     if (strspn(key, "0123456789") == strlen(key)) {
       if (parent->type == 0 || parent->type == YTF_TYPE_ARRAY) {
         unsigned index = strtoull(key, 0, 10);
@@ -73,65 +73,65 @@ ytf_t* flat_parse_assert_path
 
 static
 void flat_parse_value
-  (gpeg_capture_t* c, ytf_t* value)
+  (gpege_node_t* c, ytf_t* value)
 {
-  switch (c->children.list[ 0 ].type) {
+  switch (c->children[ 0 ]->type) {
   case SLOT_NULL:
     value->type = YTF_TYPE_NULL;
     break;
   case SLOT_BOOL:
     value->type = YTF_TYPE_BOOLEAN;
-    if (0 == strcmp((char*)(c->children.list[ 0 ].data.data), "true")) {
+    if (0 == strcmp((char*)(c->children[ 0 ]->vec.data), "true")) {
       value->value.boolint = 1;
     }
     break;
   case SLOT_FLOAT:
     value->type = YTF_TYPE_FLOAT;
-    value->value.fraction = strtod((char*)(c->children.list[ 0 ].data.data), 0);
+    value->value.fraction = strtod((char*)(c->children[ 0 ]->vec.data), 0);
     break;
   case SLOT_INT:
     value->type = YTF_TYPE_INTEGER;
-    value->value.boolint = strtoll((char*)(c->children.list[ 0 ].data.data), 0, 10);
+    value->value.boolint = strtoll((char*)(c->children[ 0 ]->vec.data), 0, 10);
     break;
   case SLOT_STRING:
     value->type = YTF_TYPE_STRING;
-    vec_reduce(&(c->children.list[ 0 ].data), 1);
-    vec_delete(&(c->children.list[ 0 ].data), 0, 1);
-    value->value.string = c->children.list[ 0 ].data;
+    vec_reduce(&(c->children[ 0 ]->vec), 1);
+    vec_delete(&(c->children[ 0 ]->vec), 0, 1);
+    value->value.string = c->children[ 0 ]->vec;
 //.. unescape
-    c->children.list[ 0 ].data.data = NULL;
-    c->children.list[ 0 ].data.size = 0;
+    c->children[ 0 ]->vec.data = NULL;
+    c->children[ 0 ]->vec.size = 0;
     break;
   case SLOT_BLOB:
     value->type = YTF_TYPE_STRING;
-    vec_reduce(&(c->children.list[ 0 ].data), 1);
-    vec_delete(&(c->children.list[ 0 ].data), 0, 4);
-    if (vec_base64_decode(&(c->children.list[ 0 ].data))) { }
-    value->value.string = c->children.list[ 0 ].data;
-    c->children.list[ 0 ].data.data = NULL;
-    c->children.list[ 0 ].data.size = 0;
+    vec_reduce(&(c->children[ 0 ]->vec), 1);
+    vec_delete(&(c->children[ 0 ]->vec), 0, 4);
+    if (vec_base64_decode(&(c->children[ 0 ]->vec))) { }
+    value->value.string = c->children[ 0 ]->vec;
+    c->children[ 0 ]->vec.data = NULL;
+    c->children[ 0 ]->vec.size = 0;
     break;
   }
 }
 
 static
 void flat_parse_nvpair
-  (gpeg_capture_t* c, ytf_t* ytf)
+  (gpege_node_t* c, ytf_t* ytf)
 {
   ytf_t value = { 0 };
-  flat_parse_value(&(c->children.list[ 2 ]), &value);
-  ytf_t* name = flat_parse_assert_path(ytf, &(c->children.list[ 0 ]));
+  flat_parse_value(c->children[ 2 ], &value);
+  ytf_t* name = flat_parse_assert_path(ytf, c->children[ 0 ]);
   *name = value;
 }
 
 static
 ytf_t* flat_parse_object
-  (gpeg_capture_t* object)
+  (gpege_node_t* object)
 {
   ytf_t* result = calloc(1, sizeof(ytf_t));
 
-  for (unsigned i=0; i < object->children.count; i++) {
-    flat_parse_nvpair(&(object->children.list[ i ]), result);
+  for (unsigned i=0; i < object->nchildren; i++) {
+    flat_parse_nvpair(object->children[ i ], result);
   }
   return result;
 }
@@ -140,18 +140,16 @@ ytf_t* flat_parse_object
  *
  */
 void flat_parse
-  (gpeg_capture_t* c, ytf_array_t* array)
+  (gpege_node_t* c, ytf_array_t* array)
 {
   if (c->type == SLOT_YTF
-      && c->children.count >= 1
-      && c->children.list[ 0 ].type == SLOT_OBJECTS)
+      && c->nchildren >= 1
+      && c->children[ 0 ]->type == SLOT_OBJECTS)
   {
-    for (unsigned i=0; i < c->children.list[ 0 ].children.count; i++) {
-      gpeg_capture_t* object = &(c->children.list[ 0 ].children.list[ i ]);
+    for (unsigned i=0; i < c->children[ 0 ]->nchildren; i++) {
+      gpege_node_t* object = c->children[ 0 ]->children[ i ];
       if (object->type == SLOT_OBJECT) {
-        ytf_t* ytf = flat_parse_object(
-                       &(c->children.list[ 0 ].children.list[ i ])
-                     );
+        ytf_t* ytf = flat_parse_object(c->children[ 0 ]->children[ i ]);
         ytf_array_push(array, ytf);
       }
     }

@@ -36,16 +36,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 static
 #include "json_bytecode.h"
 
-static
-int parser_init = 0;
-
-
-static
-vec_t err = { 0 };
-
-static
-gpege_t parser = { 0 };
-
 int ytf_parse_json
   (const vec_t* string, ytf_t* ytf)
 {
@@ -54,40 +44,23 @@ int ytf_parse_json
   ASSERT(obj)
 
   ytf_t* localtop;
-  gpege_ec_t result = { 0 };
-  gpeg_capturelist_t resobj = { 0 };
-  GPEG_ERR_T e;
+  vec_t bytecode = { json_byc, json_byc_len };
+  gpege_result_t result = { 0 };
+  int e;
 
-  result.input = (vec_t*)string;
-  result.errorstr = &err;
-  if (parser_init == 0) {
-    gpege_init(&parser);
-    parser.bytecode.data = json_byc;
-    parser.bytecode.size = json_byc_len;
-    parser_init = 1;
+  if ((e = gpeg_engine_run(&bytecode, string, 0, &result)) != 0) {
+    //..
+  } else if (!(result.success)) {
+    //..
+  } else {
+    gpege_node_t* tree = gpeg_result_to_tree(&result);
+    if ((localtop = json_parse(tree)) == NULL) {
+      return ~0;
+    }
+    *ytf = *localtop;
+    free(localtop);
+    gpeg_result_free(tree);
   }
-  e = gpege_run(&parser, &result);
-  if (e.code) {
-    vec_printf(&err, "Parser error %s", (char*)(err.data));
-    gpege_ec_free(&result);
-    return ~0;
-  }
-  e = gpege_actions2captures(result.input, &(result.actions), &resobj);
-  if (e.code) {
-    vec_printf(&err, "Parser error %s", (char*)(err.data));
-    gpege_ec_free(&result);
-    return ~0;
-  }
-  gpege_ec_free(&result);
-
-  if ((localtop = json_parse(&(resobj.list[ 0 ]))) == NULL) {
-    gpeg_capturelist_free(&resobj);
-    return ~0;
-  }
-  *ytf = *localtop;
-  free(localtop);
-  gpeg_capturelist_free(&resobj);
-
   return 0;
 }
 

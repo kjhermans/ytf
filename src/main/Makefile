@@ -1,6 +1,6 @@
 MAIN=ytf
 INCLUDE=-I../include
-LIB=../lib/libytf.a ../util/src/lib/libutil.a -lgpege
+LIB=../lib/libytf.a -lgpege ../util/src/lib/libutil.a
 CFLAGS=-g -O2 -Wall -Wextra
 
 all: $(MAIN)

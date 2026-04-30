@@ -11,12 +11,12 @@
 /* declared in ./flat_parse.c */
 extern
 void flat_parse
-  (gpeg_capture_t* c, ytf_array_t* array);
+  (gpege_node_t* c, ytf_array_t* array);
 
 /* declared in ./json_parse.c */
 extern
 ytf_t* json_parse
-  (gpeg_capture_t* c)
+  (gpege_node_t* c)
   __attribute__ ((warn_unused_result));
 
 /* declared in ./ytf_encode.c */
