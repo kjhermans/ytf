@@ -37,9 +37,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <inttypes.h>
 
-#include <util/map.h>
-#include <util/array.h>
-#include <util/vec_t.h>
+#include <andy/map.h>
+#include <andy/array.h>
+#include <andy/vec_t.h>
 
 #include <gpeg/engine/gpeg_engine.h>
 

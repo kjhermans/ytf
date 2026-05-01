@@ -35,6 +35,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _YTF_LIB_H_
 
 #include <ytf/ytf.h>
-#include <util/devmacroes.h>
+#include <andy/devmacroes.h>
 
 #endif
