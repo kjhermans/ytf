@@ -49,4 +49,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ytf_types.h"
 #include "ytf_functions.h"
 
+extern
+vec_t ytf_parse_error;
+
+extern
+vec_t json_parse_error;
+
 #endif

@@ -36,6 +36,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 static
 #include "json_bytecode.h"
 
+vec_t json_parse_error = { 0 };
+
 int ytf_parse_json
   (const vec_t* string, ytf_t* ytf)
 {
@@ -48,10 +50,25 @@ int ytf_parse_json
   gpege_result_t result = { 0 };
   int e;
 
+  json_parse_error.size = 0;
+  gpeg_engine_set_maxinstr(0);
   if ((e = gpeg_engine_run(&bytecode, string, 0, &result)) != 0) {
-    //..
+    char* errs[] = GPEGE_ERR_STRINGS;
+    vec_printf(&json_parse_error,
+      "YTF parse JSON ended in error: %s.\n", errs[ e ]
+    );
+    return ~0;
   } else if (!(result.success)) {
-    //..
+    unsigned yx[ 2 ] = { 0 };
+    e = strxypos((char*)(string->data), result.maxinputptr, yx);
+    vec_printf(&json_parse_error,
+      "YTF JSON parser ended in no match;\n"
+      "Furthest input position reached: %u, which is line %u, character %u.\n"
+      , result.maxinputptr
+      , yx[ 0 ]
+      , yx[ 1 ]
+    );
+    return ~0;
   } else {
     gpege_node_t* tree = gpeg_result_to_tree(&result);
     if ((localtop = json_parse(tree)) == NULL) {
@@ -60,8 +77,8 @@ int ytf_parse_json
     *ytf = *localtop;
     free(localtop);
     gpeg_result_free(tree);
+    return 0;
   }
-  return 0;
 }
 
 

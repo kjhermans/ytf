@@ -36,6 +36,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 static
 #include "flat_bytecode.h"
 
+vec_t ytf_parse_error = { 0 };
+
 int ytf_parse_flat
   (const vec_t* string, ytf_array_t* array)
 {
@@ -47,16 +49,29 @@ int ytf_parse_flat
   gpege_result_t result = { 0 };
   int e;
 
+  ytf_parse_error.size = 0;
+  gpeg_engine_set_maxinstr(0);
   if ((e = gpeg_engine_run(&bytecode, string, 0, &result)) != 0) {
-    //..
+    char* errs[] = GPEGE_ERR_STRINGS;
+    vec_printf(&ytf_parse_error,
+      "YTF parse flat ended in error: %s.\n", errs[ e ]
+    );
+    return ~0;
   } else if (!(result.success)) {
-    //..
+    unsigned yx[ 2 ] = { 0 };
+    e = strxypos((char*)(string->data), result.maxinputptr, yx);
+    vec_printf(&ytf_parse_error,
+      "YTF flat parser ended in no match;\n"
+      "Furthest input position reached: %u, which is line %u, character %u.\n"
+      , result.maxinputptr
+      , yx[ 0 ]
+      , yx[ 1 ]
+    );
+    return ~0;
   } else {
     gpege_node_t* tree = gpeg_result_to_tree(&result);
-    flat_parse(tree, array);
+    flat_parse(tree->children[ 0 ], array);
     gpeg_result_free(tree);
+    return 0;
   }
-  return 0;
 }
-
-
