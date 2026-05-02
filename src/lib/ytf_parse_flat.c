@@ -71,7 +71,8 @@ int ytf_parse_flat
   } else {
     gpege_node_t* tree = gpeg_result_to_tree(&result);
     flat_parse(tree->children[ 0 ], array);
-    gpeg_result_free(tree);
+    gpeg_result_free(&result);
+    gpeg_node_free(tree);
     return 0;
   }
 }

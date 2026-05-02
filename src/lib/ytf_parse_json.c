@@ -76,7 +76,8 @@ int ytf_parse_json
     }
     *ytf = *localtop;
     free(localtop);
-    gpeg_result_free(tree);
+    gpeg_result_free(&result);
+    gpeg_node_free(tree);
     return 0;
   }
 }
